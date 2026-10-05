@@ -3,43 +3,40 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Resume Screening & Ranking System | End-to-End NLP</title>
-    <meta name="description" content="AI Resume Screening and Multi-Resume Ranking System featuring TF-IDF feature extraction, Cosine Similarity scoring, and skill gap analysis.">
+    <title>AI Resume & Job Matcher | Smart Screening & Ranking</title>
+    <meta name="description" content="AI Resume Screening and Multi-Resume Ranking. Compare PDF resumes against job descriptions, analyze skill gaps, and rank candidates automatically.">
     
     <!-- Google Fonts & Icons -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <style>
         :root {
-            --bg-base: #0a0e17;
-            --bg-surface: #111827;
-            --bg-card: rgba(17, 24, 39, 0.7);
-            --bg-card-hover: rgba(31, 41, 55, 0.7);
-            --border-subtle: rgba(255, 255, 255, 0.08);
-            --border-focus: rgba(99, 102, 241, 0.5);
+            --bg-primary: #0b0f19;
+            --bg-secondary: #111827;
+            --bg-card: rgba(17, 24, 39, 0.75);
+            --border-color: rgba(255, 255, 255, 0.08);
+            --border-hover: rgba(99, 102, 241, 0.4);
 
-            --primary: #6366f1;
-            --primary-gradient: linear-gradient(135deg, #6366f1 0%, #a855f7 50%, #ec4899 100%);
-            --secondary-gradient: linear-gradient(135deg, #06b6d4 0%, #3b82f6 100%);
+            --accent-primary: #6366f1;
+            --accent-gradient: linear-gradient(135deg, #6366f1 0%, #a855f7 50%, #ec4899 100%);
             
-            --emerald: #10b981;
+            --green: #10b981;
             --rose: #f43f5e;
             --amber: #f59e0b;
             --cyan: #06b6d4;
 
-            --text-title: #f9fafb;
-            --text-body: #e5e7eb;
+            --text-main: #f3f4f6;
             --text-muted: #9ca3af;
-            --text-dark: #6b7280;
+            --text-subtle: #6b7280;
 
             --radius-sm: 8px;
             --radius-md: 14px;
             --radius-lg: 20px;
             --radius-full: 9999px;
-            --glow: 0 0 25px rgba(99, 102, 241, 0.15);
+            --shadow-glow: 0 0 25px rgba(99, 102, 241, 0.15);
         }
 
         * {
@@ -50,108 +47,105 @@
         }
 
         body {
-            background-color: var(--bg-base);
-            color: var(--text-body);
+            background-color: var(--bg-primary);
+            color: var(--text-main);
             min-height: 100vh;
             display: flex;
             flex-direction: column;
             background-image: 
-                radial-gradient(circle at 10% 10%, rgba(99, 102, 241, 0.1) 0%, transparent 40%),
-                radial-gradient(circle at 90% 90%, rgba(236, 72, 153, 0.08) 0%, transparent 45%);
+                radial-gradient(circle at 12% 12%, rgba(99, 102, 241, 0.12) 0%, transparent 40%),
+                radial-gradient(circle at 88% 88%, rgba(236, 72, 153, 0.08) 0%, transparent 45%);
             overflow-x: hidden;
         }
 
-        h1, h2, h3, h4, h5, .brand-font {
+        h1, h2, h3, h4, .brand-font {
             font-family: 'Outfit', sans-serif;
         }
 
-        code, .mono-font {
-            font-family: 'JetBrains Mono', monospace;
-        }
-
-        /* Top Navigation Bar */
+        /* Header Navigation */
         header {
-            padding: 1rem 2rem;
+            padding: 1.1rem 2rem;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            border-bottom: 1px solid var(--border-subtle);
-            background: rgba(10, 14, 23, 0.85);
+            border-bottom: 1px solid var(--border-color);
+            background: rgba(11, 15, 25, 0.85);
             backdrop-filter: blur(14px);
             position: sticky;
             top: 0;
-            z-index: 100;
+            z-index: 50;
         }
 
-        .brand-container {
+        .logo {
             display: flex;
             align-items: center;
-            gap: 0.85rem;
+            gap: 0.75rem;
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: #fff;
             text-decoration: none;
-            color: var(--text-title);
         }
 
-        .brand-badge {
-            width: 40px;
-            height: 40px;
-            background: var(--primary-gradient);
+        .logo-icon {
+            width: 38px;
+            height: 38px;
+            background: var(--accent-gradient);
             border-radius: var(--radius-sm);
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.25rem;
             color: #fff;
-            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.35);
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.35);
         }
 
-        .brand-name {
-            font-size: 1.35rem;
-            font-weight: 700;
+        .gradient-text {
+            background: var(--accent-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
 
-        .nav-tabs {
+        .nav-switch {
             display: flex;
-            gap: 0.5rem;
-            background: rgba(255, 255, 255, 0.04);
+            background: rgba(255, 255, 255, 0.05);
             padding: 4px;
             border-radius: var(--radius-full);
-            border: 1px solid var(--border-subtle);
+            border: 1px solid var(--border-color);
         }
 
-        .nav-tab-btn {
+        .nav-btn {
             background: transparent;
             border: none;
             color: var(--text-muted);
-            padding: 0.55rem 1.15rem;
+            padding: 0.5rem 1.15rem;
             border-radius: var(--radius-full);
-            font-size: 0.88rem;
+            font-size: 0.85rem;
             font-weight: 500;
             cursor: pointer;
-            transition: all 0.2s ease;
+            transition: all 0.2s;
             display: flex;
             align-items: center;
             gap: 0.45rem;
         }
 
-        .nav-tab-btn.active {
-            background: var(--primary);
+        .nav-btn.active {
+            background: var(--accent-primary);
             color: #fff;
             font-weight: 600;
             box-shadow: 0 2px 10px rgba(99, 102, 241, 0.4);
         }
 
-        /* Main Container */
-        .container {
-            max-width: 1240px;
+        /* Container Layout */
+        .main-container {
+            max-width: 1200px;
             margin: 0 auto;
             padding: 2.5rem 1.5rem 4rem;
-            width: 100%;
             flex: 1;
+            width: 100%;
         }
 
-        .hero-header {
+        .hero-section {
             text-align: center;
-            margin-bottom: 2.5rem;
+            margin-bottom: 2.25rem;
         }
 
         .hero-title {
@@ -161,81 +155,21 @@
             margin-bottom: 0.6rem;
         }
 
-        .gradient-text {
-            background: var(--primary-gradient);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        .hero-desc {
-            color: var(--text-muted);
+        .hero-subtitle {
             font-size: 1.05rem;
-            max-width: 700px;
+            color: var(--text-muted);
+            max-width: 650px;
             margin: 0 auto;
             line-height: 1.6;
         }
 
-        /* Architecture Modules Banner */
-        .modules-bar {
-            display: grid;
-            grid-template-columns: repeat(6, 1fr);
-            gap: 0.75rem;
-            margin-bottom: 2.25rem;
-        }
-
-        @media (max-width: 900px) {
-            .modules-bar {
-                grid-template-columns: repeat(3, 1fr);
-            }
-        }
-        @media (max-width: 600px) {
-            .modules-bar {
-                grid-template-columns: repeat(2, 1fr);
-            }
-            .nav-tabs {
-                display: none;
-            }
-        }
-
-        .module-chip {
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid var(--border-subtle);
-            border-radius: var(--radius-sm);
-            padding: 0.7rem 0.6rem;
-            text-align: center;
-            transition: all 0.2s ease;
-        }
-
-        .module-chip:hover {
-            border-color: var(--primary);
-            background: rgba(99, 102, 241, 0.08);
-        }
-
-        .module-num {
-            font-size: 0.72rem;
-            color: #818cf8;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-        }
-
-        .module-name {
-            font-size: 0.8rem;
-            font-weight: 600;
-            color: var(--text-title);
-            margin-top: 2px;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        /* View Mode Switcher */
-        .view-section {
+        /* Views */
+        .view-panel {
             display: none;
-            animation: fadeIn 0.35s ease-in-out;
+            animation: fadeIn 0.3s ease-in-out;
         }
 
-        .view-section.active {
+        .view-panel.active {
             display: block;
         }
 
@@ -244,7 +178,7 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
-        /* Grid Layout */
+        /* Grid */
         .grid-2col {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -252,49 +186,82 @@
             margin-bottom: 2rem;
         }
 
-        @media (max-width: 850px) {
+        @media (max-width: 860px) {
             .grid-2col {
                 grid-template-columns: 1fr;
             }
+            .hero-title {
+                font-size: 2rem;
+            }
         }
 
-        /* Panel Card */
-        .panel {
+        .panel-card {
             background: var(--bg-card);
-            border: 1px solid var(--border-subtle);
+            border: 1px solid var(--border-color);
             border-radius: var(--radius-lg);
             padding: 1.75rem;
             backdrop-filter: blur(16px);
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
             display: flex;
             flex-direction: column;
-            transition: border-color 0.2s;
+            transition: all 0.25s ease;
         }
 
-        .panel:hover {
-            border-color: var(--border-focus);
+        .panel-card:hover {
+            border-color: var(--border-hover);
+            box-shadow: var(--shadow-glow);
+        }
+
+        .panel-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1.25rem;
         }
 
         .panel-title {
             display: flex;
             align-items: center;
-            justify-content: space-between;
+            gap: 0.6rem;
             font-size: 1.15rem;
             font-weight: 600;
-            margin-bottom: 1.25rem;
-            color: var(--text-title);
         }
 
-        .panel-badge {
-            font-size: 0.75rem;
-            padding: 0.2rem 0.6rem;
-            border-radius: var(--radius-full);
-            background: rgba(99, 102, 241, 0.15);
+        .panel-title i {
             color: #818cf8;
-            border: 1px solid rgba(99, 102, 241, 0.3);
         }
 
-        /* Upload Dropzone */
+        /* Tabs inside cards */
+        .input-tabs {
+            display: flex;
+            background: rgba(0, 0, 0, 0.25);
+            padding: 4px;
+            border-radius: var(--radius-sm);
+            gap: 4px;
+            margin-bottom: 1.2rem;
+            border: 1px solid var(--border-color);
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 0.5rem;
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            font-weight: 500;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .tab-btn.active {
+            background: rgba(99, 102, 241, 0.2);
+            color: #fff;
+            font-weight: 600;
+        }
+
+        /* Dropzone */
         .dropzone {
             border: 2px dashed rgba(255, 255, 255, 0.15);
             border-radius: var(--radius-md);
@@ -309,11 +276,11 @@
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            transition: all 0.2s ease;
+            transition: all 0.25s;
         }
 
         .dropzone:hover, .dropzone.dragover {
-            border-color: var(--primary);
+            border-color: var(--accent-primary);
             background: rgba(99, 102, 241, 0.06);
         }
 
@@ -328,16 +295,15 @@
         }
 
         .dropzone i {
-            font-size: 2.5rem;
+            font-size: 2.4rem;
             color: #818cf8;
             margin-bottom: 0.6rem;
         }
 
-        .file-pill {
+        .file-selected-card {
             display: none;
             background: rgba(16, 185, 129, 0.1);
             border: 1px solid rgba(16, 185, 129, 0.3);
-            color: #a7f3d0;
             padding: 0.75rem 1rem;
             border-radius: var(--radius-sm);
             margin-bottom: 1rem;
@@ -345,149 +311,138 @@
             justify-content: space-between;
         }
 
-        /* Textarea and Preset Dropdown */
-        textarea.custom-input {
+        .file-info {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            font-size: 0.9rem;
+            color: #a7f3d0;
+        }
+
+        /* Textarea */
+        textarea.custom-textarea {
             width: 100%;
             height: 200px;
             background: rgba(0, 0, 0, 0.3);
-            border: 1px solid var(--border-subtle);
+            border: 1px solid var(--border-color);
             border-radius: var(--radius-md);
             padding: 1rem;
             color: #fff;
             font-size: 0.9rem;
-            line-height: 1.5;
             resize: vertical;
             outline: none;
+            line-height: 1.5;
             flex: 1;
             transition: border-color 0.2s;
         }
 
-        textarea.custom-input:focus {
-            border-color: var(--primary);
+        textarea.custom-textarea:focus {
+            border-color: var(--accent-primary);
             box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.2);
         }
 
-        .presets-row {
+        .quick-action-bar {
             display: flex;
-            align-items: center;
+            justify-content: flex-end;
+            margin-top: 0.6rem;
             gap: 0.5rem;
-            margin-top: 0.75rem;
             flex-wrap: wrap;
         }
 
-        .preset-tag {
+        .sample-btn {
             background: rgba(255, 255, 255, 0.05);
-            border: 1px solid var(--border-subtle);
+            border: 1px solid var(--border-color);
             color: var(--text-muted);
-            font-size: 0.76rem;
-            padding: 0.3rem 0.65rem;
+            font-size: 0.78rem;
+            padding: 0.35rem 0.75rem;
             border-radius: var(--radius-sm);
             cursor: pointer;
             transition: all 0.2s;
         }
 
-        .preset-tag:hover {
+        .sample-btn:hover {
             background: rgba(99, 102, 241, 0.2);
             color: #fff;
-            border-color: var(--primary);
+            border-color: var(--accent-primary);
         }
 
-        /* Action Buttons */
-        .action-row {
+        /* Submit Button */
+        .submit-wrapper {
             text-align: center;
-            margin: 1.5rem 0 2.5rem;
-            display: flex;
-            justify-content: center;
-            gap: 1rem;
-            flex-wrap: wrap;
-        }
-
-        .btn {
-            border: none;
-            padding: 0.9rem 2.2rem;
-            font-size: 1.05rem;
-            font-weight: 600;
-            border-radius: var(--radius-full);
-            cursor: pointer;
-            transition: all 0.25s ease;
-            display: inline-flex;
-            align-items: center;
-            gap: 0.6rem;
-            text-decoration: none;
+            margin: 1rem 0 2.5rem;
         }
 
         .btn-primary {
-            background: var(--primary-gradient);
+            background: var(--accent-gradient);
+            border: none;
             color: #fff;
+            padding: 1rem 2.8rem;
+            font-size: 1.1rem;
+            font-weight: 600;
+            border-radius: var(--radius-full);
+            cursor: pointer;
             box-shadow: 0 4px 20px rgba(99, 102, 241, 0.4);
+            transition: all 0.25s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.75rem;
         }
 
         .btn-primary:hover {
             transform: translateY(-2px);
-            box-shadow: 0 6px 25px rgba(99, 102, 241, 0.6);
+            box-shadow: 0 6px 28px rgba(99, 102, 241, 0.6);
         }
 
-        .btn-secondary {
-            background: rgba(255, 255, 255, 0.06);
-            border: 1px solid var(--border-subtle);
-            color: var(--text-title);
-        }
-
-        .btn-secondary:hover {
-            background: rgba(255, 255, 255, 0.12);
-        }
-
-        .btn:disabled {
+        .btn-primary:disabled {
             opacity: 0.6;
             cursor: not-allowed;
-            transform: none !important;
+            transform: none;
         }
 
-        /* Results / Insights */
-        .results-box {
+        /* Single Results Card */
+        .results-container {
             background: var(--bg-card);
-            border: 1px solid var(--border-subtle);
+            border: 1px solid var(--border-color);
             border-radius: var(--radius-lg);
             padding: 2.25rem;
             backdrop-filter: blur(16px);
             box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
-            margin-top: 1rem;
             display: none;
             animation: fadeIn 0.4s ease-in-out;
         }
 
-        .score-hero-flex {
+        .score-hero {
             display: flex;
             align-items: center;
             justify-content: space-around;
             flex-wrap: wrap;
             gap: 2rem;
             padding-bottom: 2rem;
-            border-bottom: 1px solid var(--border-subtle);
+            border-bottom: 1px solid var(--border-color);
             margin-bottom: 2rem;
         }
 
-        .gauge-wrap {
+        .score-dial {
             position: relative;
             width: 150px;
             height: 150px;
         }
 
-        .gauge-svg {
+        .score-circle-svg {
             transform: rotate(-90deg);
             width: 100%;
             height: 100%;
         }
 
-        .gauge-bg {
+        .circle-bg {
             fill: none;
             stroke: rgba(255, 255, 255, 0.08);
             stroke-width: 10;
         }
 
-        .gauge-fill {
+        .circle-progress {
             fill: none;
-            stroke: url(#score-grad);
+            stroke: url(#score-gradient);
             stroke-width: 10;
             stroke-linecap: round;
             stroke-dasharray: 408;
@@ -495,7 +450,7 @@
             transition: stroke-dashoffset 1.2s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
-        .gauge-center {
+        .score-number-overlay {
             position: absolute;
             top: 50%;
             left: 50%;
@@ -503,55 +458,56 @@
             text-align: center;
         }
 
-        .gauge-score {
-            font-size: 2.1rem;
+        .score-val {
+            font-size: 2.2rem;
             font-weight: 800;
-            line-height: 1;
             color: #fff;
+            line-height: 1;
         }
 
-        .gauge-label {
+        .score-lbl {
             font-size: 0.75rem;
             color: var(--text-muted);
             text-transform: uppercase;
+            letter-spacing: 0.05em;
             margin-top: 4px;
         }
 
-        .stat-grid {
+        .score-stats {
             display: flex;
-            gap: 1.25rem;
+            gap: 1.5rem;
             flex-wrap: wrap;
         }
 
-        .stat-card {
+        .stat-box {
             background: rgba(255, 255, 255, 0.03);
-            border: 1px solid var(--border-subtle);
+            border: 1px solid var(--border-color);
             border-radius: var(--radius-md);
-            padding: 1.1rem 1.4rem;
+            padding: 1rem 1.4rem;
             text-align: center;
-            min-width: 130px;
+            min-width: 120px;
         }
 
-        .stat-card-val {
-            font-size: 1.45rem;
+        .stat-val {
+            font-size: 1.4rem;
             font-weight: 700;
             color: #fff;
         }
 
-        .stat-card-lbl {
+        .stat-lbl {
             font-size: 0.75rem;
             color: var(--text-muted);
-            margin-top: 4px;
+            margin-top: 2px;
         }
 
-        /* Chips & Tags */
-        .chips-container {
+        /* Skill Gap Chips */
+        .chip-container {
             display: flex;
             flex-wrap: wrap;
             gap: 0.5rem;
         }
 
-        .skill-tag {
+        .chip {
             padding: 0.35rem 0.75rem;
             border-radius: var(--radius-full);
             font-size: 0.8rem;
@@ -561,60 +517,20 @@
             gap: 0.35rem;
         }
 
-        .skill-tag.matched {
+        .chip.matched {
             background: rgba(16, 185, 129, 0.15);
             border: 1px solid rgba(16, 185, 129, 0.3);
             color: #6ee7b7;
         }
 
-        .skill-tag.missing {
+        .chip.missing {
             background: rgba(244, 63, 94, 0.15);
             border: 1px solid rgba(244, 63, 94, 0.3);
             color: #fda4af;
         }
 
-        /* TF-IDF Weights Bars */
-        .feature-bar-row {
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-            margin-bottom: 0.6rem;
-            font-size: 0.82rem;
-        }
-
-        .feature-term {
-            width: 140px;
-            color: var(--text-title);
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            font-family: 'JetBrains Mono', monospace;
-        }
-
-        .feature-track {
-            flex: 1;
-            height: 8px;
-            background: rgba(255, 255, 255, 0.08);
-            border-radius: var(--radius-full);
-            overflow: hidden;
-        }
-
-        .feature-progress {
-            height: 100%;
-            background: var(--secondary-gradient);
-            border-radius: var(--radius-full);
-        }
-
-        .feature-score {
-            width: 45px;
-            text-align: right;
-            color: var(--cyan);
-            font-weight: 600;
-            font-family: 'JetBrains Mono', monospace;
-        }
-
-        /* Recommendations list */
-        .rec-box {
+        /* Recommendations */
+        .recs-card {
             background: rgba(99, 102, 241, 0.06);
             border: 1px solid rgba(99, 102, 241, 0.2);
             border-radius: var(--radius-md);
@@ -622,58 +538,83 @@
             margin-top: 1.75rem;
         }
 
-        .rec-box h4 {
-            color: #a5b4fc;
+        .recs-card h4 {
+            font-size: 1.05rem;
             margin-bottom: 0.85rem;
             display: flex;
             align-items: center;
             gap: 0.5rem;
+            color: #a5b4fc;
         }
 
-        .rec-list {
+        .recs-list {
             list-style: none;
             display: flex;
             flex-direction: column;
             gap: 0.65rem;
         }
 
-        .rec-list li {
+        .recs-list li {
             font-size: 0.9rem;
+            color: #e2e8f0;
             display: flex;
             align-items: flex-start;
-            gap: 0.6rem;
+            gap: 0.65rem;
             line-height: 1.5;
         }
 
-        .rec-list li i {
+        .recs-list li i {
             color: #818cf8;
             margin-top: 4px;
         }
 
-        /* Batch Ranking Table */
-        .ranking-table-card {
+        /* Multi-Resume Ranking Leaderboard */
+        .ranking-card {
             background: var(--bg-card);
-            border: 1px solid var(--border-subtle);
+            border: 1px solid var(--border-color);
             border-radius: var(--radius-lg);
             overflow: hidden;
             box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
-            margin-top: 2rem;
+            display: none;
+            animation: fadeIn 0.4s ease-in-out;
+            margin-top: 1rem;
         }
 
-        .table-header-bar {
-            padding: 1.25rem 1.5rem;
+        .ranking-header {
+            padding: 1.25rem 1.75rem;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            border-bottom: 1px solid var(--border-subtle);
+            border-bottom: 1px solid var(--border-color);
             background: rgba(255, 255, 255, 0.02);
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .btn-csv {
+            background: rgba(16, 185, 129, 0.15);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            color: #6ee7b7;
+            padding: 0.55rem 1.15rem;
+            border-radius: var(--radius-full);
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-csv:hover {
+            background: rgba(16, 185, 129, 0.25);
+            color: #fff;
         }
 
         table.ranking-table {
             width: 100%;
             border-collapse: collapse;
             text-align: left;
-            font-size: 0.9rem;
         }
 
         table.ranking-table th {
@@ -682,13 +623,14 @@
             font-size: 0.8rem;
             text-transform: uppercase;
             letter-spacing: 0.05em;
-            border-bottom: 1px solid var(--border-subtle);
+            border-bottom: 1px solid var(--border-color);
             background: rgba(0, 0, 0, 0.2);
         }
 
         table.ranking-table td {
             padding: 1.1rem 1.25rem;
-            border-bottom: 1px solid var(--border-subtle);
+            border-bottom: 1px solid var(--border-color);
+            font-size: 0.9rem;
             vertical-align: middle;
         }
 
@@ -696,7 +638,7 @@
             background: rgba(255, 255, 255, 0.03);
         }
 
-        .rank-medal {
+        .rank-badge {
             width: 32px;
             height: 32px;
             border-radius: var(--radius-full);
@@ -710,14 +652,14 @@
         .rank-1 { background: rgba(245, 158, 11, 0.2); color: #fbbf24; border: 1px solid #f59e0b; }
         .rank-2 { background: rgba(156, 163, 175, 0.2); color: #e5e7eb; border: 1px solid #9ca3af; }
         .rank-3 { background: rgba(180, 83, 9, 0.2); color: #d97706; border: 1px solid #b45309; }
-        .rank-default { background: rgba(255, 255, 255, 0.05); color: var(--text-muted); }
+        .rank-other { background: rgba(255, 255, 255, 0.05); color: var(--text-muted); }
 
         .progress-bar-wrap {
             height: 8px;
             background: rgba(255, 255, 255, 0.08);
             border-radius: var(--radius-full);
             overflow: hidden;
-            width: 120px;
+            width: 110px;
             display: inline-block;
             vertical-align: middle;
             margin-right: 8px;
@@ -725,60 +667,11 @@
 
         .progress-bar-fill {
             height: 100%;
-            background: var(--primary-gradient);
+            background: var(--accent-gradient);
             border-radius: var(--radius-full);
         }
 
-        /* Architecture Inspector Cards */
-        .arch-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 1.5rem;
-        }
-
-        @media (max-width: 900px) {
-            .arch-grid {
-                grid-template-columns: 1fr;
-            }
-        }
-
-        .arch-card {
-            background: var(--bg-card);
-            border: 1px solid var(--border-subtle);
-            border-radius: var(--radius-lg);
-            padding: 1.5rem;
-        }
-
-        .arch-icon {
-            font-size: 1.75rem;
-            color: #818cf8;
-            margin-bottom: 0.75rem;
-        }
-
-        .arch-card h4 {
-            font-size: 1.1rem;
-            color: #fff;
-            margin-bottom: 0.5rem;
-        }
-
-        .arch-card p {
-            font-size: 0.88rem;
-            color: var(--text-muted);
-            line-height: 1.55;
-        }
-
-        .code-pill {
-            display: inline-block;
-            background: rgba(0, 0, 0, 0.4);
-            border: 1px solid var(--border-subtle);
-            padding: 0.2rem 0.5rem;
-            border-radius: 4px;
-            font-size: 0.78rem;
-            color: #a5b4fc;
-            margin-top: 0.75rem;
-        }
-
-        /* Toast */
+        /* Toast & Footer */
         .toast {
             position: fixed;
             bottom: 2rem;
@@ -792,12 +685,11 @@
             z-index: 200;
         }
 
-        /* Footer */
         footer {
-            padding: 2rem;
             text-align: center;
-            border-top: 1px solid var(--border-subtle);
-            color: var(--text-dark);
+            padding: 2rem;
+            border-top: 1px solid var(--border-color);
+            color: var(--text-subtle);
             font-size: 0.85rem;
         }
     </style>
@@ -806,357 +698,321 @@
 
     <!-- Header Navigation -->
     <header>
-        <a href="/" class="brand-container">
-            <div class="brand-badge">
-                <i class="fa-solid fa-brain"></i>
+        <a href="/" class="logo">
+            <div class="logo-icon">
+                <i class="fa-solid fa-file-shield"></i>
             </div>
-            <div>
-                <div class="brand-name">Resume<span class="gradient-text">Screen</span> NLP</div>
-                <div style="font-size: 0.72rem; color: var(--text-muted);">End-to-End System Modules</div>
-            </div>
+            <span>Match<span class="gradient-text">ATS</span> AI</span>
         </a>
 
-        <!-- Module Navigation Tabs -->
-        <div class="nav-tabs">
-            <button class="nav-tab-btn active" onclick="switchView('single-view', this)">
+        <div class="nav-switch">
+            <button class="nav-btn active" onclick="switchMainTab('single', this)">
                 <i class="fa-solid fa-file-invoice"></i> Single Resume
             </button>
-            <button class="nav-tab-btn" onclick="switchView('batch-view', this)">
+            <button class="nav-btn" onclick="switchMainTab('ranking', this)">
                 <i class="fa-solid fa-ranking-star"></i> Multi-Resume Ranking
-            </button>
-            <button class="nav-tab-btn" onclick="switchView('arch-view', this)">
-                <i class="fa-solid fa-sitemap"></i> System Modules
             </button>
         </div>
     </header>
 
-    <!-- Main Container -->
-    <main class="container">
-        <!-- Hero Header -->
-        <section class="hero-header">
-            <h1 class="hero-title">AI Resume Screening & Ranking System</h1>
-            <p class="hero-desc">
-                Automate resume evaluation using Scikit-Learn TF-IDF feature extraction, Cosine Similarity matching, and intelligent skill gap analysis.
+    <!-- Main Content -->
+    <main class="main-container">
+        <!-- Hero Section -->
+        <section class="hero-section">
+            <h1 class="hero-title">AI Resume & Job Matcher</h1>
+            <p class="hero-subtitle">
+                Evaluate match compatibility, analyze skill gaps, and rank multiple candidate resumes using intelligent NLP & Cosine Similarity.
             </p>
         </section>
 
-        <!-- System Architecture Modules Summary Bar -->
-        <section class="modules-bar">
-            <div class="module-chip">
-                <div class="module-num">Module 6.1</div>
-                <div class="module-name">Resume Upload (PDF/Text)</div>
-            </div>
-            <div class="module-chip">
-                <div class="module-num">Module 6.2</div>
-                <div class="module-name">Job Description Input</div>
-            </div>
-            <div class="module-chip">
-                <div class="module-num">Module 6.3</div>
-                <div class="module-name">NLTK Preprocessing</div>
-            </div>
-            <div class="module-chip">
-                <div class="module-num">Module 6.4</div>
-                <div class="module-name">TF-IDF Vectorization</div>
-            </div>
-            <div class="module-chip">
-                <div class="module-num">Module 6.5</div>
-                <div class="module-name">Cosine Similarity</div>
-            </div>
-            <div class="module-chip">
-                <div class="module-num">Module 6.6</div>
-                <div class="module-name">Skill Gap & Ranking</div>
-            </div>
-        </section>
-
-        <!-- ======================================================== -->
-        <!-- VIEW 1: SINGLE RESUME MATCHING -->
-        <!-- ======================================================== -->
-        <div id="single-view" class="view-section active">
+        <!-- ======================================================= -->
+        <!-- TAB 1: SINGLE RESUME MATCHING & SKILL GAP ANALYSIS -->
+        <!-- ======================================================= -->
+        <div id="view-single" class="view-panel active">
             <form id="single-form">
                 <div class="grid-2col">
-                    <!-- Left: Resume Upload (Module 6.1) -->
-                    <div class="panel">
-                        <div class="panel-title">
-                            <span><i class="fa-solid fa-file-pdf" style="color: #818cf8; margin-right: 6px;"></i> 6.1 Resume Upload</span>
-                            <span class="panel-badge">PDF or Text</span>
+                    <!-- Left: Resume Input -->
+                    <div class="panel-card">
+                        <div class="panel-header">
+                            <div class="panel-title">
+                                <i class="fa-regular fa-file-lines"></i>
+                                <span>1. Your Resume</span>
+                            </div>
                         </div>
 
-                        <!-- Dropzone -->
-                        <div class="dropzone" id="single-dropzone">
-                            <i class="fa-solid fa-cloud-arrow-up"></i>
-                            <h4 style="margin-bottom: 4px;">Drag & drop Candidate PDF</h4>
-                            <p style="font-size: 0.8rem; color: var(--text-muted);">PDF files up to 32MB</p>
-                            <input type="file" id="single_pdf" name="resume_pdf" accept=".pdf">
+                        <div class="input-tabs">
+                            <button type="button" class="tab-btn active" id="tab-upload" onclick="switchInputMode('upload')">
+                                <i class="fa-solid fa-arrow-up-from-bracket"></i> Upload PDF
+                            </button>
+                            <button type="button" class="tab-btn" id="tab-paste" onclick="switchInputMode('paste')">
+                                <i class="fa-solid fa-keyboard"></i> Paste Text
+                            </button>
                         </div>
 
-                        <!-- File Selected Pill -->
-                        <div class="file-pill" id="single-file-pill">
-                            <span><i class="fa-solid fa-file-check" style="margin-right: 6px;"></i> <span id="single-file-name">resume.pdf</span></span>
-                            <i class="fa-solid fa-xmark" style="cursor: pointer;" onclick="clearSingleFile()"></i>
+                        <!-- Upload PDF Dropzone -->
+                        <div id="upload-container">
+                            <div class="dropzone" id="single-dropzone">
+                                <i class="fa-solid fa-cloud-arrow-up"></i>
+                                <h4 style="margin-bottom: 0.35rem;">Drag & drop your Resume PDF</h4>
+                                <p style="font-size: 0.82rem; color: var(--text-muted);">Supports .pdf format (up to 32MB)</p>
+                                <input type="file" id="single_pdf" name="resume_pdf" accept=".pdf">
+                            </div>
+
+                            <div class="file-selected-card" id="single-file-card">
+                                <div class="file-info">
+                                    <i class="fa-solid fa-file-pdf"></i>
+                                    <span id="single-file-name">resume.pdf</span>
+                                </div>
+                                <i class="fa-solid fa-xmark" style="cursor: pointer; color: #f87171;" onclick="clearSingleFile()"></i>
+                            </div>
                         </div>
 
-                        <div style="margin: 0.5rem 0;">
-                            <textarea class="custom-input" id="single_resume_text" name="resume_text" style="height: 120px;" placeholder="Or paste raw resume text here..."></textarea>
+                        <!-- Paste Text Area -->
+                        <div id="paste-container" style="display: none; flex: 1; flex-direction: column;">
+                            <textarea class="custom-textarea" id="single_resume_text" name="resume_text" placeholder="Paste full resume text here (Summary, Skills, Experience)..."></textarea>
                         </div>
 
-                        <div class="presets-row">
-                            <span style="font-size: 0.75rem; color: var(--text-dark);">Demo Samples:</span>
-                            <span class="preset-tag" onclick="loadSampleResume('python')">Python Dev Resume</span>
-                            <span class="preset-tag" onclick="loadSampleResume('data')">Data Scientist Resume</span>
+                        <div class="quick-action-bar">
+                            <button type="button" class="sample-btn" onclick="fillSampleSingleResume()">
+                                <i class="fa-regular fa-lightbulb"></i> Load Sample Resume
+                            </button>
                         </div>
                     </div>
 
-                    <!-- Right: Job Description (Module 6.2) -->
-                    <div class="panel">
-                        <div class="panel-title">
-                            <span><i class="fa-solid fa-briefcase" style="color: #ec4899; margin-right: 6px;"></i> 6.2 Job Description</span>
-                            <span class="panel-badge">Target Role</span>
+                    <!-- Right: Job Description Input -->
+                    <div class="panel-card">
+                        <div class="panel-header">
+                            <div class="panel-title">
+                                <i class="fa-solid fa-briefcase"></i>
+                                <span>2. Target Job Description</span>
+                            </div>
                         </div>
 
-                        <textarea class="custom-input" id="single_jd_text" name="job_description" placeholder="Paste target job requirements, skills, and qualifications here..."></textarea>
+                        <div style="flex: 1; display: flex; flex-direction: column;">
+                            <textarea class="custom-textarea" id="single_jd_text" name="job_description" placeholder="Paste target job requirements, skills, and qualifications here..."></textarea>
+                        </div>
 
-                        <div class="presets-row">
-                            <span style="font-size: 0.75rem; color: var(--text-dark);">Industry Presets:</span>
-                            <span class="preset-tag" onclick="loadSampleJD('backend')">Python Backend Engineer</span>
-                            <span class="preset-tag" onclick="loadSampleJD('ds')">Data Scientist / ML</span>
-                            <span class="preset-tag" onclick="loadSampleJD('fullstack')">Full Stack Engineer</span>
+                        <div class="quick-action-bar">
+                            <button type="button" class="sample-btn" onclick="fillSampleSingleJob()">
+                                <i class="fa-regular fa-lightbulb"></i> Load Sample Job (Python/Fullstack)
+                            </button>
                         </div>
                     </div>
                 </div>
 
-                <div class="action-row">
-                    <button type="submit" class="btn btn-primary" id="single-submit-btn">
-                        <i class="fa-solid fa-bolt"></i> Evaluate Resume & Match Score
+                <div class="submit-wrapper">
+                    <button type="submit" class="btn-primary" id="single-btn">
+                        <span>Analyze Match & Skill Gap</span>
+                        <i class="fa-solid fa-arrow-right"></i>
                     </button>
                 </div>
             </form>
 
-            <!-- Single Result Card -->
-            <div class="results-box" id="single-results">
-                <div class="score-hero-flex">
-                    <!-- Gauge (Module 6.5) -->
-                    <div class="gauge-wrap">
-                        <svg class="gauge-svg" viewBox="0 0 150 150">
+            <!-- Results Card -->
+            <div class="results-container" id="single-results">
+                <div class="score-hero">
+                    <div class="score-dial">
+                        <svg class="score-circle-svg" viewBox="0 0 150 150">
                             <defs>
-                                <linearGradient id="score-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <linearGradient id="score-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
                                     <stop offset="0%" stop-color="#6366f1" />
                                     <stop offset="50%" stop-color="#a855f7" />
                                     <stop offset="100%" stop-color="#ec4899" />
                                 </linearGradient>
                             </defs>
-                            <circle class="gauge-bg" cx="75" cy="75" r="65"></circle>
-                            <circle class="gauge-fill" id="single-gauge-fill" cx="75" cy="75" r="65"></circle>
+                            <circle class="circle-bg" cx="75" cy="75" r="65"></circle>
+                            <circle class="circle-progress" id="score-circle" cx="75" cy="75" r="65"></circle>
                         </svg>
-                        <div class="gauge-center">
-                            <div class="gauge-score" id="single-score-text">0%</div>
-                            <div class="gauge-label">Cosine Match</div>
+                        <div class="score-number-overlay">
+                            <div class="score-val" id="score-value">0%</div>
+                            <div class="score-lbl">Match Score</div>
                         </div>
                     </div>
 
-                    <!-- Stat Cards -->
-                    <div class="stat-grid">
-                        <div class="stat-card">
-                            <div class="stat-card-val" id="single-matched-count" style="color: #6ee7b7;">0</div>
-                            <div class="stat-card-lbl">Matched Skills</div>
+                    <div class="score-stats">
+                        <div class="stat-box">
+                            <div class="stat-val" id="matched-count" style="color: #6ee7b7;">0</div>
+                            <div class="stat-lbl">Matched Skills</div>
                         </div>
-                        <div class="stat-card">
-                            <div class="stat-card-val" id="single-missing-count" style="color: #fda4af;">0</div>
-                            <div class="stat-card-lbl">Missing Skills</div>
+                        <div class="stat-box">
+                            <div class="stat-val" id="missing-count" style="color: #fda4af;">0</div>
+                            <div class="stat-lbl">Missing Skills</div>
                         </div>
-                        <div class="stat-card">
-                            <div class="stat-card-val" id="single-tokens-count" style="color: #93c5fd;">0</div>
-                            <div class="stat-card-lbl">NLTK Cleaned Tokens</div>
+                        <div class="stat-box">
+                            <div class="stat-val" id="resume-words">0</div>
+                            <div class="stat-lbl">Resume Words</div>
                         </div>
                     </div>
                 </div>
 
-                <!-- Skill & Feature Breakdown Grid (Module 6.4 & 6.6) -->
+                <!-- Skill Gap Breakdown -->
                 <div class="grid-2col" style="margin-bottom: 0;">
-                    <!-- Skills Breakdown -->
-                    <div class="panel" style="background: rgba(0,0,0,0.25);">
-                        <h4 style="color: #6ee7b7; margin-bottom: 0.75rem;"><i class="fa-solid fa-circle-check"></i> Matched Technical Skills</h4>
-                        <div class="chips-container" id="single-matched-chips" style="margin-bottom: 1.5rem;"></div>
-
-                        <h4 style="color: #fda4af; margin-bottom: 0.75rem;"><i class="fa-solid fa-circle-exclamation"></i> Missing Job Skills</h4>
-                        <div class="chips-container" id="single-missing-chips"></div>
+                    <div class="panel-card" style="background: rgba(0, 0, 0, 0.25);">
+                        <h4 style="color: #6ee7b7; margin-bottom: 0.85rem; font-size: 0.95rem;">
+                            <i class="fa-solid fa-circle-check"></i> Matched Technical Skills
+                        </h4>
+                        <div class="chip-container" id="matched-chips"></div>
                     </div>
 
-                    <!-- TF-IDF Feature Importance (Module 6.4) -->
-                    <div class="panel" style="background: rgba(0,0,0,0.25);">
-                        <h4 style="color: #93c5fd; margin-bottom: 1rem;"><i class="fa-solid fa-chart-simple"></i> 6.4 TF-IDF Feature Weights (Top JD N-grams)</h4>
-                        <div id="single-feature-bars"></div>
+                    <div class="panel-card" style="background: rgba(0, 0, 0, 0.25);">
+                        <h4 style="color: #fda4af; margin-bottom: 0.85rem; font-size: 0.95rem;">
+                            <i class="fa-solid fa-circle-exclamation"></i> Missing Job Skills (Skill Gap)
+                        </h4>
+                        <div class="chip-container" id="missing-chips"></div>
                     </div>
                 </div>
 
-                <!-- ATS Recommendations -->
-                <div class="rec-box">
-                    <h4><i class="fa-solid fa-wand-magic-sparkles"></i> ATS Gap Recommendations</h4>
-                    <ul class="rec-list" id="single-recs-list"></ul>
+                <!-- Recommendations -->
+                <div class="recs-card">
+                    <h4>
+                        <i class="fa-solid fa-wand-magic-sparkles"></i>
+                        <span>ATS Gap & Optimization Recommendations</span>
+                    </h4>
+                    <ul class="recs-list" id="recommendations-list"></ul>
                 </div>
             </div>
         </div>
 
-        <!-- ======================================================== -->
-        <!-- VIEW 2: MULTI-RESUME BATCH RANKING (Module 6.6) -->
-        <!-- ======================================================== -->
-        <div id="batch-view" class="view-section">
-            <form id="batch-form">
+        <!-- ======================================================= -->
+        <!-- TAB 2: MULTI-RESUME BATCH RANKING LEADERBOARD -->
+        <!-- ======================================================= -->
+        <div id="view-ranking" class="view-panel">
+            <form id="ranking-form">
                 <div class="grid-2col">
                     <!-- Left: Multi-PDF Upload -->
-                    <div class="panel">
-                        <div class="panel-title">
-                            <span><i class="fa-solid fa-folder-open" style="color: #818cf8; margin-right: 6px;"></i> 6.1 Multi-Resume Batch Upload</span>
-                            <span class="panel-badge">Select Multiple PDFs</span>
+                    <div class="panel-card">
+                        <div class="panel-header">
+                            <div class="panel-title">
+                                <i class="fa-solid fa-folder-open"></i>
+                                <span>Upload Multiple Resumes</span>
+                            </div>
                         </div>
 
                         <div class="dropzone" id="batch-dropzone">
                             <i class="fa-solid fa-file-circle-plus"></i>
-                            <h4 style="margin-bottom: 4px;">Drag & drop Multiple Candidate PDFs</h4>
-                            <p style="font-size: 0.8rem; color: var(--text-muted);">Hold Ctrl / Shift to select multiple files</p>
+                            <h4 style="margin-bottom: 0.35rem;">Drag & drop Multiple Candidate PDFs</h4>
+                            <p style="font-size: 0.82rem; color: var(--text-muted);">Select multiple .pdf files to compare and rank</p>
                             <input type="file" id="batch_pdfs" name="resumes_pdf" multiple accept=".pdf">
                         </div>
 
-                        <div class="file-pill" id="batch-file-pill">
-                            <span><i class="fa-solid fa-files" style="margin-right: 6px;"></i> <span id="batch-file-name">0 PDFs Selected</span></span>
-                            <i class="fa-solid fa-xmark" style="cursor: pointer;" onclick="clearBatchFiles()"></i>
+                        <div class="file-selected-card" id="batch-file-card">
+                            <div class="file-info">
+                                <i class="fa-solid fa-files"></i>
+                                <span id="batch-file-name">0 PDFs Selected</span>
+                            </div>
+                            <i class="fa-solid fa-xmark" style="cursor: pointer; color: #f87171;" onclick="clearBatchFiles()"></i>
                         </div>
 
-                        <div class="presets-row">
-                            <span style="font-size: 0.75rem; color: var(--text-dark);">Demo Testing:</span>
-                            <span class="preset-tag" onclick="simulateMultiCandidateDemo()"><i class="fa-solid fa-flask"></i> Run Multi-Candidate Simulation</span>
+                        <div class="quick-action-bar">
+                            <button type="button" class="sample-btn" onclick="runRankingDemo()">
+                                <i class="fa-solid fa-flask"></i> Load Demo Candidates
+                            </button>
                         </div>
                     </div>
 
-                    <!-- Right: Target Job Description -->
-                    <div class="panel">
-                        <div class="panel-title">
-                            <span><i class="fa-solid fa-briefcase" style="color: #ec4899; margin-right: 6px;"></i> Benchmark Job Profile</span>
-                            <span class="panel-badge">Role Specification</span>
+                    <!-- Right: Benchmark Job Description -->
+                    <div class="panel-card">
+                        <div class="panel-header">
+                            <div class="panel-title">
+                                <i class="fa-solid fa-briefcase"></i>
+                                <span>Benchmark Job Description</span>
+                            </div>
                         </div>
 
-                        <textarea class="custom-input" id="batch_jd_text" name="job_description" placeholder="Paste target job requirements for ranking multiple applicants..."></textarea>
+                        <div style="flex: 1; display: flex; flex-direction: column;">
+                            <textarea class="custom-textarea" id="ranking_jd_text" name="job_description" placeholder="Paste the target job description to rank all candidate resumes against..."></textarea>
+                        </div>
 
-                        <div class="presets-row">
-                            <span style="font-size: 0.75rem; color: var(--text-dark);">Presets:</span>
-                            <span class="preset-tag" onclick="loadBatchJD('backend')">Senior Python Engineer</span>
-                            <span class="preset-tag" onclick="loadBatchJD('ds')">Lead AI/ML Scientist</span>
+                        <div class="quick-action-bar">
+                            <button type="button" class="sample-btn" onclick="fillSampleRankingJob()">
+                                <i class="fa-regular fa-lightbulb"></i> Load Benchmark Job
+                            </button>
                         </div>
                     </div>
                 </div>
 
-                <div class="action-row">
-                    <button type="submit" class="btn btn-primary" id="batch-submit-btn">
-                        <i class="fa-solid fa-ranking-star"></i> Rank All Candidates with Pandas
+                <div class="submit-wrapper">
+                    <button type="submit" class="btn-primary" id="ranking-btn">
+                        <span>Rank Candidates & Generate Leaderboard</span>
+                        <i class="fa-solid fa-ranking-star"></i>
                     </button>
                 </div>
             </form>
 
-            <!-- Batch Ranking Table Card -->
-            <div id="batch-results-container" style="display: none;">
-                <div class="ranking-table-card">
-                    <div class="table-header-bar">
-                        <div>
-                            <h3 style="font-size: 1.15rem; color: #fff;"><i class="fa-solid fa-trophy" style="color: #f59e0b; margin-right: 8px;"></i> Candidate Ranking Leaderboard (Module 6.6)</h3>
-                            <p style="font-size: 0.8rem; color: var(--text-muted);" id="batch-summary-text">Evaluated candidates sorted by Cosine Similarity</p>
-                        </div>
-                        <button class="btn btn-secondary" style="padding: 0.5rem 1rem; font-size: 0.85rem;" onclick="downloadRankingCSV()">
-                            <i class="fa-solid fa-file-csv" style="color: #10b981;"></i> Download CSV Report
-                        </button>
+            <!-- Leaderboard Card -->
+            <div class="ranking-card" id="ranking-results">
+                <div class="ranking-header">
+                    <div>
+                        <h3 style="font-size: 1.15rem; color: #fff;">
+                            <i class="fa-solid fa-trophy" style="color: #f59e0b; margin-right: 6px;"></i> Candidate Ranking Leaderboard
+                        </h3>
+                        <p style="font-size: 0.8rem; color: var(--text-muted);" id="ranking-summary">Ranked candidates sorted by compatibility</p>
                     </div>
-
-                    <div style="overflow-x: auto;">
-                        <table class="ranking-table">
-                            <thead>
-                                <tr>
-                                    <th>Rank</th>
-                                    <th>Candidate / Resume</th>
-                                    <th>Match Score</th>
-                                    <th>Matched Skills</th>
-                                    <th>Missing Skills</th>
-                                </tr>
-                            </thead>
-                            <tbody id="ranking-table-body">
-                                <!-- Injected rows -->
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- ======================================================== -->
-        <!-- VIEW 3: SYSTEM ARCHITECTURE SPECIFICATION (Modules 6.1-6.6) -->
-        <!-- ======================================================== -->
-        <div id="arch-view" class="view-section">
-            <div class="hero-header" style="margin-bottom: 2rem;">
-                <h2 style="font-size: 1.9rem; color: #fff;">System Modules & 3-Tier Architecture</h2>
-                <p class="hero-desc">Detailed design implementation matching system specifications 6.1 through 6.6.</p>
-            </div>
-
-            <div class="arch-grid">
-                <div class="arch-card">
-                    <div class="arch-icon"><i class="fa-solid fa-file-arrow-up"></i></div>
-                    <h4>6.1 Resume Upload Module</h4>
-                    <p>Allows users to upload resumes in PDF format using PyPDF2 or paste raw text. Extracts text streams safely and sanitizes encoding.</p>
-                    <div class="code-pill">PyPDF2.PdfReader & io.BytesIO</div>
+                    <button class="btn-csv" onclick="downloadCSVReport()">
+                        <i class="fa-solid fa-file-csv"></i> Download CSV Report
+                    </button>
                 </div>
 
-                <div class="arch-card">
-                    <div class="arch-icon"><i class="fa-solid fa-file-lines"></i></div>
-                    <h4>6.2 Job Description Module</h4>
-                    <p>Enables intake of job postings, skill requirements, and benchmark profiles against which resumes are evaluated.</p>
-                    <div class="code-pill">Job Profile Intake & Presets</div>
-                </div>
-
-                <div class="arch-card">
-                    <div class="arch-icon"><i class="fa-solid fa-filter"></i></div>
-                    <h4>6.3 Text Preprocessing Module</h4>
-                    <p>Lowercases, strips punctuation, emails, and URLs, and eliminates NLTK English stopwords to retain dense technical tokens.</p>
-                    <div class="code-pill">NLTK Tokenizer & Stopwords</div>
-                </div>
-
-                <div class="arch-card">
-                    <div class="arch-icon"><i class="fa-solid fa-vector-square"></i></div>
-                    <h4>6.4 Feature Extraction Module</h4>
-                    <p>Converts textual content into numerical TF-IDF feature vectors capturing unigram and bigram keyword importance.</p>
-                    <div class="code-pill">sklearn.TfidfVectorizer</div>
-                </div>
-
-                <div class="arch-card">
-                    <div class="arch-icon"><i class="fa-solid fa-calculator"></i></div>
-                    <h4>6.5 Similarity & Scoring Module</h4>
-                    <p>Calculates the mathematical angle between high-dimensional resume and job vectors to derive a normalized cosine similarity percentage.</p>
-                    <div class="code-pill">sklearn.cosine_similarity</div>
-                </div>
-
-                <div class="arch-card">
-                    <div class="arch-icon"><i class="fa-solid fa-list-ol"></i></div>
-                    <h4>6.6 Skill Analysis & Ranking</h4>
-                    <p>Extracts domain technical skills, highlights matched and missing capabilities, and ranks multiple candidate profiles with Pandas export.</p>
-                    <div class="code-pill">Pandas DataFrame & CSV Engine</div>
+                <div style="overflow-x: auto;">
+                    <table class="ranking-table">
+                        <thead>
+                            <tr>
+                                <th>Rank</th>
+                                <th>Candidate / Resume</th>
+                                <th>Match Score</th>
+                                <th>Matched Skills</th>
+                                <th>Missing Skills (Gap)</th>
+                            </tr>
+                        </thead>
+                        <tbody id="ranking-table-body"></tbody>
+                    </table>
                 </div>
             </div>
         </div>
     </main>
 
-    <!-- Toast Notification -->
+    <!-- Toast Error Notification -->
     <div class="toast" id="toast-msg"></div>
 
     <!-- Footer -->
     <footer>
-        <p>AI Resume Screening & Ranking System &bull; Python, Scikit-Learn, NLTK, Pandas &amp; Flask</p>
+        <p>Built with Flask, Scikit-Learn, PyPDF2, NLTK, and Pandas &bull; Ready for Render Cloud Deployment</p>
     </footer>
 
-    <!-- JavaScript Application Logic -->
     <script>
-        let latestBatchResults = [];
+        let currentInputMode = 'upload';
+        let latestRankedCandidates = [];
 
-        function switchView(viewId, btn) {
-            document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
-            document.querySelectorAll('.nav-tab-btn').forEach(b => b.classList.remove('active'));
-            
-            document.getElementById(viewId).classList.add('active');
+        function switchMainTab(tab, btn) {
+            document.querySelectorAll('.view-panel').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+
+            if (tab === 'single') {
+                document.getElementById('view-single').classList.add('active');
+            } else {
+                document.getElementById('view-ranking').classList.add('active');
+            }
             if (btn) btn.classList.add('active');
+        }
+
+        function switchInputMode(mode) {
+            currentInputMode = mode;
+            const uploadBtn = document.getElementById('tab-upload');
+            const pasteBtn = document.getElementById('tab-paste');
+            const uploadArea = document.getElementById('upload-container');
+            const pasteArea = document.getElementById('paste-container');
+
+            if (mode === 'upload') {
+                uploadBtn.classList.add('active');
+                pasteBtn.classList.remove('active');
+                uploadArea.style.display = 'block';
+                pasteArea.style.display = 'none';
+            } else {
+                pasteBtn.classList.add('active');
+                uploadBtn.classList.remove('active');
+                uploadArea.style.display = 'none';
+                pasteArea.style.display = 'flex';
+            }
         }
 
         function showToast(msg) {
@@ -1166,95 +1022,76 @@
             setTimeout(() => { toast.style.display = 'none'; }, 4000);
         }
 
-        // --- Single Upload Handlers ---
+        // --- Single PDF Selection ---
         const singlePdf = document.getElementById('single_pdf');
-        const singleDropzone = document.getElementById('single-dropzone');
-        const singleFilePill = document.getElementById('single-file-pill');
+        const singleFileCard = document.getElementById('single-file-card');
         const singleFileName = document.getElementById('single-file-name');
+        const singleDropzone = document.getElementById('single-dropzone');
 
         singlePdf.addEventListener('change', function() {
             if (this.files && this.files[0]) {
-                singleFileName.textContent = this.files[0].name + ` (${(this.files[0].size/1024).toFixed(1)} KB)`;
-                singleFilePill.style.display = 'flex';
+                singleFileName.textContent = this.files[0].name + ` (${(this.files[0].size / 1024).toFixed(1)} KB)`;
+                singleFileCard.style.display = 'flex';
                 singleDropzone.style.display = 'none';
             }
         });
 
         function clearSingleFile() {
             singlePdf.value = '';
-            singleFilePill.style.display = 'none';
+            singleFileCard.style.display = 'none';
             singleDropzone.style.display = 'flex';
         }
 
-        // --- Batch Upload Handlers ---
+        // --- Batch PDF Selection ---
         const batchPdfs = document.getElementById('batch_pdfs');
-        const batchDropzone = document.getElementById('batch-dropzone');
-        const batchFilePill = document.getElementById('batch-file-pill');
+        const batchFileCard = document.getElementById('batch-file-card');
         const batchFileName = document.getElementById('batch-file-name');
+        const batchDropzone = document.getElementById('batch-dropzone');
 
         batchPdfs.addEventListener('change', function() {
             if (this.files && this.files.length > 0) {
-                batchFileName.textContent = `${this.files.length} PDF files selected`;
-                batchFilePill.style.display = 'flex';
+                batchFileName.textContent = `${this.files.length} PDF resumes selected`;
+                batchFileCard.style.display = 'flex';
                 batchDropzone.style.display = 'none';
             }
         });
 
         function clearBatchFiles() {
             batchPdfs.value = '';
-            batchFilePill.style.display = 'none';
+            batchFileCard.style.display = 'none';
             batchDropzone.style.display = 'flex';
         }
 
-        // --- Sample Presets ---
-        const sampleResumes = {
-            python: `Senior Python Engineer with 5+ years experience designing scalable microservices.
-Skills: Python, Flask, Django, PostgreSQL, Docker, Kubernetes, REST APIs, Git, AWS, Redis, Microservices, CI/CD, NLTK.
+        // --- Sample Fillers ---
+        function fillSampleSingleResume() {
+            switchInputMode('paste');
+            document.getElementById('single_resume_text').value = `Senior Software Engineer with 5+ years experience designing scalable web applications.
+Skills: Python, Flask, Django, PostgreSQL, Docker, Kubernetes, REST APIs, Git, AWS, CI/CD, React, JavaScript, Microservices, Redis.
 Experience:
-- Architected high-throughput REST APIs using Flask and Docker on AWS ECS.
-- Optimized PostgreSQL database queries reducing response latency by 45%.
-- Built automated CI/CD deployment pipelines using GitHub Actions.`,
-            data: `Data Scientist & Machine Learning Engineer with 4 years experience.
-Skills: Python, Machine Learning, Deep Learning, NLP, Scikit-Learn, PyTorch, Pandas, NumPy, SQL, Flask, Docker, Data Analysis, Computer Vision.
-Experience:
-- Developed NLP text classification and sentiment models achieving 94% accuracy.
-- Built end-to-end TF-IDF similarity engines and deployed via Flask APIs.`
-        };
-
-        const sampleJDs = {
-            backend: `We are hiring a Senior Python Backend Engineer.
-Requirements:
-- Strong proficiency in Python, Flask or Django, and RESTful API architecture.
-- Experience with PostgreSQL, Redis, and message queues.
-- Containerization expertise with Docker and Kubernetes.
-- Cloud deployment experience on AWS and CI/CD pipelines.
-- Knowledge of Machine Learning fundamentals or NLP is a plus.`,
-            ds: `Looking for a Lead Data Scientist / NLP Engineer.
-Requirements:
-- Advanced proficiency in Python, Scikit-Learn, Pandas, NumPy, and PyTorch.
-- Hands-on expertise with Natural Language Processing (NLP), TF-IDF, embeddings, and Cosine Similarity.
-- Experience designing ML feature pipelines and deploying models via Flask/FastAPI.
-- Strong SQL and cloud analytics knowledge.`,
-            fullstack: `Full Stack Developer needed.
-Requirements:
-- Python, Flask, React, JavaScript, HTML5, CSS3, REST APIs.
-- SQL databases (PostgreSQL/MySQL), Git, Docker, and agile development.`
-        };
-
-        function loadSampleResume(type) {
-            document.getElementById('single_resume_text').value = sampleResumes[type] || '';
-            clearSingleFile();
+- Designed and maintained high-throughput microservices using Flask and Docker on AWS ECS.
+- Optimized database queries in PostgreSQL, reducing query latency by 40%.
+- Implemented automated CI/CD pipelines with GitHub Actions.`;
         }
 
-        function loadSampleJD(type) {
-            document.getElementById('single_jd_text').value = sampleJDs[type] || '';
+        function fillSampleSingleJob() {
+            document.getElementById('single_jd_text').value = `We are looking for a Senior Backend Python Engineer to lead the architecture of our cloud microservices platform.
+Requirements:
+- Strong proficiency in Python, Flask or Django, and RESTful API design.
+- Hands-on experience with PostgreSQL, Redis, and message queues.
+- Strong containerization skills with Docker and Kubernetes.
+- Experience with AWS cloud infrastructure and automated CI/CD workflows.
+- Familiarity with Machine Learning pipelines, NLP, and scikit-learn is a plus.`;
         }
 
-        function loadBatchJD(type) {
-            document.getElementById('batch_jd_text').value = sampleJDs[type] || '';
+        function fillSampleRankingJob() {
+            document.getElementById('ranking_jd_text').value = `Senior Full Stack Python & Cloud Developer.
+Requirements:
+- Strong Python, Flask, REST APIs, and React/JavaScript.
+- PostgreSQL, Redis, Docker, Kubernetes, and AWS deployment.
+- CI/CD, Git, and automated testing experience.`;
         }
 
-        // --- Single Submit Pipeline ---
+        // --- Single Submit ---
         document.getElementById('single-form').addEventListener('submit', async function(e) {
             e.preventDefault();
             const jd = document.getElementById('single_jd_text').value.trim();
@@ -1263,26 +1100,43 @@ Requirements:
                 return;
             }
 
-            const formData = new FormData(this);
-            const btn = document.getElementById('single-submit-btn');
+            const formData = new FormData();
+            formData.append('job_description', jd);
+
+            if (currentInputMode === 'upload') {
+                if (!singlePdf.files || !singlePdf.files[0]) {
+                    showToast('Please upload a PDF resume or switch to paste text.');
+                    return;
+                }
+                formData.append('resume_pdf', singlePdf.files[0]);
+            } else {
+                const text = document.getElementById('single_resume_text').value.trim();
+                if (!text) {
+                    showToast('Please paste your resume text.');
+                    return;
+                }
+                formData.append('resume_text', text);
+            }
+
+            const btn = document.getElementById('single-btn');
             btn.disabled = true;
-            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Processing NLP Pipeline...';
+            btn.innerHTML = '<span>Analyzing...</span> <i class="fa-solid fa-spinner fa-spin"></i>';
 
             try {
                 const res = await fetch('/analyze_single', { method: 'POST', body: formData });
-                const json = await res.json();
-                if (!res.ok || !json.success) {
-                    showToast(json.error || 'Analysis failed.');
+                const data = await res.json();
+                if (!res.ok || !data.success) {
+                    showToast(data.error || 'Failed to analyze documents.');
                     return;
                 }
 
-                renderSingleResults(json.data);
+                renderSingleResults(data.data);
             } catch (err) {
-                showToast('Network error or server unavailable.');
+                showToast('Server error or network failure.');
                 console.error(err);
             } finally {
                 btn.disabled = false;
-                btn.innerHTML = '<i class="fa-solid fa-bolt"></i> Evaluate Resume & Match Score';
+                btn.innerHTML = '<span>Analyze Match & Skill Gap</span> <i class="fa-solid fa-arrow-right"></i>';
             }
         });
 
@@ -1290,125 +1144,111 @@ Requirements:
             const resultsBox = document.getElementById('single-results');
             resultsBox.style.display = 'block';
 
-            // Gauge Score
-            document.getElementById('single-score-text').textContent = `${data.match_score}%`;
+            // Gauge
+            document.getElementById('score-value').textContent = `${data.match_score}%`;
             const circumference = 408.4;
             const offset = circumference - (data.match_score / 100) * circumference;
-            document.getElementById('single-gauge-fill').style.strokeDashoffset = offset;
+            document.getElementById('score-circle').style.strokeDashoffset = offset;
 
             // Stats
-            document.getElementById('single-matched-count').textContent = data.matched_skills.length;
-            document.getElementById('single-missing-count').textContent = data.missing_skills.length;
-            document.getElementById('single-tokens-count').textContent = data.preprocessing_summary.processed_tokens_count;
+            document.getElementById('matched-count').textContent = data.matched_skills.length;
+            document.getElementById('missing-count').textContent = data.missing_skills.length;
+            document.getElementById('resume-words').textContent = data.resume_word_count;
 
-            // Matched Skills
-            const matchedWrap = document.getElementById('single-matched-chips');
+            // Matched skills
+            const matchedWrap = document.getElementById('matched-chips');
             matchedWrap.innerHTML = '';
             if (data.matched_skills.length > 0) {
-                data.matched_skills.forEach(s => {
-                    matchedWrap.innerHTML += `<span class="skill-tag matched"><i class="fa-solid fa-check"></i> ${s}</span>`;
+                data.matched_skills.forEach(kw => {
+                    matchedWrap.innerHTML += `<span class="chip matched"><i class="fa-solid fa-check"></i> ${kw}</span>`;
                 });
             } else {
-                matchedWrap.innerHTML = '<span style="color: var(--text-muted); font-size: 0.85rem;">No direct skills matched.</span>';
+                matchedWrap.innerHTML = '<span style="color: var(--text-muted); font-size: 0.85rem;">No direct matching technical skills found.</span>';
             }
 
-            // Missing Skills
-            const missingWrap = document.getElementById('single-missing-chips');
+            // Missing skills (Skill Gap)
+            const missingWrap = document.getElementById('missing-chips');
             missingWrap.innerHTML = '';
             if (data.missing_skills.length > 0) {
-                data.missing_skills.forEach(s => {
-                    missingWrap.innerHTML += `<span class="skill-tag missing"><i class="fa-solid fa-plus"></i> ${s}</span>`;
+                data.missing_skills.forEach(kw => {
+                    missingWrap.innerHTML += `<span class="chip missing"><i class="fa-solid fa-plus"></i> ${kw}</span>`;
                 });
             } else {
-                missingWrap.innerHTML = '<span style="color: #6ee7b7; font-size: 0.85rem;">🎉 All essential job skills matched!</span>';
-            }
-
-            // TF-IDF Feature Weights (Module 6.4)
-            const featureWrap = document.getElementById('single-feature-bars');
-            featureWrap.innerHTML = '';
-            if (data.top_features && data.top_features.length > 0) {
-                const maxWeight = Math.max(...data.top_features.map(f => f.weight), 0.01);
-                data.top_features.slice(0, 8).forEach(f => {
-                    const pct = Math.round((f.weight / maxWeight) * 100);
-                    featureWrap.innerHTML += `
-                        <div class="feature-bar-row">
-                            <div class="feature-term" title="${f.feature}">${f.feature}</div>
-                            <div class="feature-track">
-                                <div class="feature-progress" style="width: ${pct}%;"></div>
-                            </div>
-                            <div class="feature-score">${f.weight}</div>
-                        </div>
-                    `;
-                });
+                missingWrap.innerHTML = '<span style="color: #6ee7b7; font-size: 0.85rem;">🎉 No major skill gaps found! Excellent match.</span>';
             }
 
             // Recommendations
-            const recList = document.getElementById('single-recs-list');
-            recList.innerHTML = '';
-            data.recommendations.forEach(r => {
-                recList.innerHTML += `<li><i class="fa-solid fa-chevron-right"></i> <span>${r}</span></li>`;
+            const recsList = document.getElementById('recommendations-list');
+            recsList.innerHTML = '';
+            data.recommendations.forEach(rec => {
+                recsList.innerHTML += `<li><i class="fa-solid fa-chevron-right"></i> <span>${rec}</span></li>`;
             });
 
             resultsBox.scrollIntoView({ behavior: 'smooth', block: 'start' });
         }
 
-        // --- Batch Submit Pipeline (Module 6.6) ---
-        document.getElementById('batch-form').addEventListener('submit', async function(e) {
+        // --- Multi-Resume Ranking Submit ---
+        document.getElementById('ranking-form').addEventListener('submit', async function(e) {
             e.preventDefault();
-            const jd = document.getElementById('batch_jd_text').value.trim();
+            const jd = document.getElementById('ranking_jd_text').value.trim();
             if (!jd) {
-                showToast('Please provide a target benchmark job description.');
+                showToast('Please provide a benchmark job description.');
+                return;
+            }
+
+            if (!batchPdfs.files || batchPdfs.files.length === 0) {
+                showToast('Please select multiple PDF files, or click "Load Demo Candidates".');
                 return;
             }
 
             const formData = new FormData(this);
-            const btn = document.getElementById('batch-submit-btn');
+            const btn = document.getElementById('ranking-btn');
             btn.disabled = true;
-            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Ranking Multi-Resumes...';
+            btn.innerHTML = '<span>Ranking Candidates...</span> <i class="fa-solid fa-spinner fa-spin"></i>';
 
             try {
                 const res = await fetch('/analyze_batch', { method: 'POST', body: formData });
-                const json = await res.json();
-                if (!res.ok || !json.success) {
-                    showToast(json.error || 'Batch evaluation failed.');
+                const data = await res.json();
+                if (!res.ok || !data.success) {
+                    showToast(data.error || 'Batch evaluation failed.');
                     return;
                 }
 
-                renderBatchResults(json.ranked_candidates);
+                renderRankingResults(data.ranked_candidates);
             } catch (err) {
-                showToast('Network error or server unavailable.');
+                showToast('Server error or network failure.');
                 console.error(err);
             } finally {
                 btn.disabled = false;
-                btn.innerHTML = '<i class="fa-solid fa-ranking-star"></i> Rank All Candidates with Pandas';
+                btn.innerHTML = '<span>Rank Candidates & Generate Leaderboard</span> <i class="fa-solid fa-ranking-star"></i>';
             }
         });
 
-        function renderBatchResults(candidates) {
-            latestBatchResults = candidates;
-            const container = document.getElementById('batch-results-container');
-            container.style.display = 'block';
+        function renderRankingResults(candidates) {
+            latestRankedCandidates = candidates;
+            const card = document.getElementById('ranking-results');
+            card.style.display = 'block';
 
-            document.getElementById('batch-summary-text').textContent = `Ranked ${candidates.length} candidate resumes against target benchmark job description.`;
+            document.getElementById('ranking-summary').textContent = `Ranked ${candidates.length} applicant resumes based on skill match and Cosine Similarity.`;
 
             const tbody = document.getElementById('ranking-table-body');
             tbody.innerHTML = '';
 
-            candidates.forEach((c, i) => {
-                const rankNum = i + 1;
-                let medalClass = 'rank-default';
-                if (rankNum === 1) medalClass = 'rank-1';
-                else if (rankNum === 2) medalClass = 'rank-2';
-                else if (rankNum === 3) medalClass = 'rank-3';
+            candidates.forEach((c, idx) => {
+                const rank = idx + 1;
+                let badgeClass = 'rank-other';
+                if (rank === 1) badgeClass = 'rank-1';
+                else if (rank === 2) badgeClass = 'rank-2';
+                else if (rank === 3) badgeClass = 'rank-3';
 
-                const matchedBadges = c.matched_skills.map(s => `<span class="skill-tag matched" style="font-size:0.75rem; padding: 0.2rem 0.5rem;">${s}</span>`).join(' ') || '<span style="color:var(--text-muted); font-size:0.8rem;">None</span>';
-                const missingBadges = c.missing_skills.slice(0, 4).map(s => `<span class="skill-tag missing" style="font-size:0.75rem; padding: 0.2rem 0.5rem;">${s}</span>`).join(' ') || '<span style="color:#6ee7b7; font-size:0.8rem;">None</span>';
+                const matchedHtml = c.matched_skills.map(s => `<span class="chip matched" style="font-size:0.75rem; padding: 0.2rem 0.5rem;">${s}</span>`).join(' ') || '<span style="color:var(--text-muted); font-size:0.8rem;">None</span>';
+                const missingHtml = c.missing_skills.slice(0, 4).map(s => `<span class="chip missing" style="font-size:0.75rem; padding: 0.2rem 0.5rem;">${s}</span>`).join(' ') || '<span style="color:#6ee7b7; font-size:0.8rem;">None</span>';
 
                 tbody.innerHTML += `
                     <tr>
-                        <td><span class="rank-medal ${medalClass}">#${rankNum}</span></td>
+                        <td><span class="rank-badge ${badgeClass}">#${rank}</span></td>
                         <td>
-                            <div style="font-weight: 600; color: #fff;"><i class="fa-regular fa-file-lines" style="margin-right: 6px; color: #818cf8;"></i>${c.candidate_name}</div>
+                            <div style="font-weight: 600; color: #fff;"><i class="fa-regular fa-file-pdf" style="color: #818cf8; margin-right: 6px;"></i>${c.candidate_name}</div>
                             <div style="font-size: 0.75rem; color: var(--text-muted);">${c.resume_word_count} words</div>
                         </td>
                         <td>
@@ -1416,59 +1256,57 @@ Requirements:
                                 <div class="progress-bar-wrap">
                                     <div class="progress-bar-fill" style="width: ${c.match_score}%;"></div>
                                 </div>
-                                <span style="font-weight: 700; color: #fff; font-size: 0.95rem;">${c.match_score}%</span>
+                                <span style="font-weight: 700; color: #fff;">${c.match_score}%</span>
                             </div>
                         </td>
-                        <td><div style="max-width: 250px; display: flex; flex-wrap: wrap; gap: 4px;">${matchedBadges}</div></td>
-                        <td><div style="max-width: 250px; display: flex; flex-wrap: wrap; gap: 4px;">${missingBadges}</div></td>
+                        <td><div style="max-width: 260px; display: flex; flex-wrap: wrap; gap: 4px;">${matchedHtml}</div></td>
+                        <td><div style="max-width: 260px; display: flex; flex-wrap: wrap; gap: 4px;">${missingHtml}</div></td>
                     </tr>
                 `;
             });
 
-            container.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            card.scrollIntoView({ behavior: 'smooth', block: 'start' });
         }
 
-        // --- Demo Simulation for Multi-Candidates ---
-        function simulateMultiCandidateDemo() {
-            loadBatchJD('backend');
+        function runRankingDemo() {
+            fillSampleRankingJob();
             const demoCandidates = [
                 {
-                    candidate_name: "Alice_Senior_Python_Dev.pdf",
-                    match_score: 88.5,
-                    resume_word_count: 380,
-                    matched_skills: ["python", "flask", "docker", "kubernetes", "postgresql", "aws", "git", "rest api"],
-                    missing_skills: ["redis", "microservices"]
+                    candidate_name: "Alice_Senior_FullStack.pdf",
+                    match_score: 87.5,
+                    resume_word_count: 390,
+                    matched_skills: ["python", "flask", "docker", "kubernetes", "postgresql", "aws", "git", "react"],
+                    missing_skills: ["redis"]
                 },
                 {
-                    candidate_name: "Bob_FullStack_Engineer.pdf",
-                    match_score: 72.4,
-                    resume_word_count: 420,
-                    matched_skills: ["python", "flask", "docker", "git", "rest api", "html", "react"],
-                    missing_skills: ["kubernetes", "postgresql", "redis", "aws"]
+                    candidate_name: "Bob_Backend_Developer.pdf",
+                    match_score: 74.0,
+                    resume_word_count: 360,
+                    matched_skills: ["python", "flask", "docker", "git", "postgresql", "rest api"],
+                    missing_skills: ["kubernetes", "redis", "aws", "react"]
                 },
                 {
-                    candidate_name: "Charlie_Data_Analyst.pdf",
-                    match_score: 48.0,
-                    resume_word_count: 290,
-                    matched_skills: ["python", "sql", "git", "pandas"],
-                    missing_skills: ["flask", "docker", "kubernetes", "redis", "aws", "rest api"]
-                },
-                {
-                    candidate_name: "David_Junior_Web_Dev.pdf",
-                    match_score: 34.2,
-                    resume_word_count: 210,
-                    matched_skills: ["html", "css", "javascript", "git"],
+                    candidate_name: "Charlie_Frontend_Dev.pdf",
+                    match_score: 46.5,
+                    resume_word_count: 280,
+                    matched_skills: ["react", "javascript", "html", "git"],
                     missing_skills: ["python", "flask", "docker", "kubernetes", "postgresql", "redis", "aws"]
+                },
+                {
+                    candidate_name: "David_Junior_Intern.pdf",
+                    match_score: 31.0,
+                    resume_word_count: 190,
+                    matched_skills: ["python", "git"],
+                    missing_skills: ["flask", "docker", "kubernetes", "postgresql", "redis", "aws", "react"]
                 }
             ];
 
-            renderBatchResults(demoCandidates);
-            showToast('✅ Multi-Candidate Ranking Leaderboard simulated successfully!');
+            renderRankingResults(demoCandidates);
+            showToast('✅ Demo candidates ranked successfully!');
         }
 
-        // --- Export CSV Report ---
-        async function downloadRankingCSV() {
-            if (!latestBatchResults || latestBatchResults.length === 0) {
+        async function downloadCSVReport() {
+            if (!latestRankedCandidates || latestRankedCandidates.length === 0) {
                 showToast('No candidate data available to export.');
                 return;
             }
@@ -1477,7 +1315,7 @@ Requirements:
                 const res = await fetch('/export_ranking_csv', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ candidates: latestBatchResults })
+                    body: JSON.stringify({ candidates: latestRankedCandidates })
                 });
 
                 const blob = await res.blob();

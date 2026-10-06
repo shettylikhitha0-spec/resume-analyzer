@@ -3,32 +3,35 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Resume & Job Matcher | Smart Screening & Ranking</title>
-    <meta name="description" content="AI Resume Screening and Multi-Resume Ranking. Compare PDF resumes against job descriptions, analyze skill gaps, and rank candidates automatically.">
+    <title>AI Resume Screening & Ranking System | Software Engineering Project</title>
+    <meta name="description" content="AI Resume Screening & Ranking System featuring TF-IDF NLP analysis, Cosine Similarity matching, skill gap matrix, and candidate ranking.">
     
-    <!-- Google Fonts & Icons -->
+    <!-- Google Fonts, Font Awesome, Chart.js -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
     <style>
         :root {
-            --bg-primary: #0b0f19;
-            --bg-secondary: #111827;
-            --bg-card: rgba(17, 24, 39, 0.75);
-            --border-color: rgba(255, 255, 255, 0.08);
-            --border-hover: rgba(99, 102, 241, 0.4);
+            --bg-base: #0a0e17;
+            --bg-card: rgba(17, 24, 39, 0.78);
+            --bg-card-hover: rgba(31, 41, 55, 0.85);
+            --border-subtle: rgba(255, 255, 255, 0.08);
+            --border-glow: rgba(99, 102, 241, 0.45);
 
-            --accent-primary: #6366f1;
-            --accent-gradient: linear-gradient(135deg, #6366f1 0%, #a855f7 50%, #ec4899 100%);
-            
-            --green: #10b981;
+            --primary: #6366f1;
+            --primary-gradient: linear-gradient(135deg, #6366f1 0%, #a855f7 50%, #ec4899 100%);
+            --secondary-gradient: linear-gradient(135deg, #06b6d4 0%, #3b82f6 100%);
+
+            --emerald: #10b981;
             --rose: #f43f5e;
             --amber: #f59e0b;
             --cyan: #06b6d4;
 
-            --text-main: #f3f4f6;
+            --text-title: #f9fafb;
+            --text-body: #e5e7eb;
             --text-muted: #9ca3af;
             --text-subtle: #6b7280;
 
@@ -36,7 +39,7 @@
             --radius-md: 14px;
             --radius-lg: 20px;
             --radius-full: 9999px;
-            --shadow-glow: 0 0 25px rgba(99, 102, 241, 0.15);
+            --shadow-glow: 0 0 30px rgba(99, 102, 241, 0.18);
         }
 
         * {
@@ -47,105 +50,92 @@
         }
 
         body {
-            background-color: var(--bg-primary);
-            color: var(--text-main);
+            background-color: var(--bg-base);
+            color: var(--text-body);
             min-height: 100vh;
             display: flex;
             flex-direction: column;
             background-image: 
-                radial-gradient(circle at 12% 12%, rgba(99, 102, 241, 0.12) 0%, transparent 40%),
-                radial-gradient(circle at 88% 88%, rgba(236, 72, 153, 0.08) 0%, transparent 45%);
+                radial-gradient(circle at 10% 10%, rgba(99, 102, 241, 0.12) 0%, transparent 40%),
+                radial-gradient(circle at 90% 90%, rgba(236, 72, 153, 0.09) 0%, transparent 45%);
             overflow-x: hidden;
         }
 
-        h1, h2, h3, h4, .brand-font {
+        h1, h2, h3, h4, h5, .brand-font {
             font-family: 'Outfit', sans-serif;
         }
 
-        /* Header Navigation */
+        code, .mono {
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        /* Top Header */
         header {
-            padding: 1.1rem 2rem;
+            padding: 1.1rem 2.25rem;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            border-bottom: 1px solid var(--border-color);
-            background: rgba(11, 15, 25, 0.85);
-            backdrop-filter: blur(14px);
+            border-bottom: 1px solid var(--border-subtle);
+            background: rgba(10, 14, 23, 0.88);
+            backdrop-filter: blur(16px);
             position: sticky;
             top: 0;
-            z-index: 50;
+            z-index: 100;
         }
 
-        .logo {
+        .brand-wrap {
             display: flex;
             align-items: center;
-            gap: 0.75rem;
-            font-size: 1.3rem;
-            font-weight: 700;
-            color: #fff;
+            gap: 0.85rem;
             text-decoration: none;
+            color: var(--text-title);
         }
 
-        .logo-icon {
-            width: 38px;
-            height: 38px;
-            background: var(--accent-gradient);
+        .brand-logo {
+            width: 40px;
+            height: 40px;
+            background: var(--primary-gradient);
             border-radius: var(--radius-sm);
             display: flex;
             align-items: center;
             justify-content: center;
             color: #fff;
-            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.35);
+            font-size: 1.25rem;
+            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.35);
         }
 
         .gradient-text {
-            background: var(--accent-gradient);
+            background: var(--primary-gradient);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
 
-        .nav-switch {
-            display: flex;
-            background: rgba(255, 255, 255, 0.05);
-            padding: 4px;
-            border-radius: var(--radius-full);
-            border: 1px solid var(--border-color);
-        }
-
-        .nav-btn {
-            background: transparent;
-            border: none;
-            color: var(--text-muted);
-            padding: 0.5rem 1.15rem;
-            border-radius: var(--radius-full);
-            font-size: 0.85rem;
-            font-weight: 500;
-            cursor: pointer;
-            transition: all 0.2s;
-            display: flex;
-            align-items: center;
-            gap: 0.45rem;
-        }
-
-        .nav-btn.active {
-            background: var(--accent-primary);
-            color: #fff;
+        .header-badge {
+            background: rgba(99, 102, 241, 0.15);
+            border: 1px solid rgba(99, 102, 241, 0.3);
+            color: #818cf8;
+            font-size: 0.78rem;
             font-weight: 600;
-            box-shadow: 0 2px 10px rgba(99, 102, 241, 0.4);
+            padding: 0.35rem 0.85rem;
+            border-radius: var(--radius-full);
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
         }
 
-        /* Container Layout */
-        .main-container {
-            max-width: 1200px;
+        /* Container */
+        .container {
+            max-width: 1240px;
             margin: 0 auto;
-            padding: 2.5rem 1.5rem 4rem;
-            flex: 1;
+            padding: 2.25rem 1.5rem 4rem;
             width: 100%;
+            flex: 1;
         }
 
-        .hero-section {
+        /* Hero */
+        .hero {
             text-align: center;
-            margin-bottom: 2.25rem;
+            margin-bottom: 2.5rem;
         }
 
         .hero-title {
@@ -158,24 +148,43 @@
         .hero-subtitle {
             font-size: 1.05rem;
             color: var(--text-muted);
-            max-width: 650px;
+            max-width: 720px;
             margin: 0 auto;
             line-height: 1.6;
         }
 
-        /* Views */
-        .view-panel {
-            display: none;
-            animation: fadeIn 0.3s ease-in-out;
+        /* Pipeline Breadcrumb */
+        .pipeline-bar {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-bottom: 2.5rem;
+            font-size: 0.8rem;
         }
 
-        .view-panel.active {
-            display: block;
+        .pipeline-step {
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--border-subtle);
+            padding: 0.4rem 0.8rem;
+            border-radius: var(--radius-full);
+            color: var(--text-muted);
         }
 
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
+        .pipeline-step.active {
+            background: rgba(99, 102, 241, 0.18);
+            border-color: var(--primary);
+            color: #fff;
+            font-weight: 600;
+        }
+
+        .pipeline-arrow {
+            color: var(--text-subtle);
+            font-size: 0.7rem;
         }
 
         /* Grid */
@@ -186,33 +195,34 @@
             margin-bottom: 2rem;
         }
 
-        @media (max-width: 860px) {
+        @media (max-width: 880px) {
             .grid-2col {
                 grid-template-columns: 1fr;
             }
             .hero-title {
-                font-size: 2rem;
+                font-size: 2.1rem;
             }
         }
 
-        .panel-card {
+        /* Panel Card */
+        .panel {
             background: var(--bg-card);
-            border: 1px solid var(--border-color);
+            border: 1px solid var(--border-subtle);
             border-radius: var(--radius-lg);
             padding: 1.75rem;
             backdrop-filter: blur(16px);
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
             display: flex;
             flex-direction: column;
             transition: all 0.25s ease;
         }
 
-        .panel-card:hover {
-            border-color: var(--border-hover);
+        .panel:hover {
+            border-color: var(--border-glow);
             box-shadow: var(--shadow-glow);
         }
 
-        .panel-header {
+        .panel-head {
             display: flex;
             align-items: center;
             justify-content: space-between;
@@ -225,47 +235,23 @@
             gap: 0.6rem;
             font-size: 1.15rem;
             font-weight: 600;
+            color: var(--text-title);
         }
 
-        .panel-title i {
-            color: #818cf8;
-        }
-
-        /* Tabs inside cards */
-        .input-tabs {
-            display: flex;
-            background: rgba(0, 0, 0, 0.25);
-            padding: 4px;
-            border-radius: var(--radius-sm);
-            gap: 4px;
-            margin-bottom: 1.2rem;
-            border: 1px solid var(--border-color);
-        }
-
-        .tab-btn {
-            flex: 1;
-            padding: 0.5rem;
-            background: transparent;
-            border: none;
+        .badge-pill {
+            font-size: 0.75rem;
+            padding: 0.2rem 0.65rem;
+            border-radius: var(--radius-full);
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border-subtle);
             color: var(--text-muted);
-            font-size: 0.85rem;
-            font-weight: 500;
-            border-radius: 6px;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-
-        .tab-btn.active {
-            background: rgba(99, 102, 241, 0.2);
-            color: #fff;
-            font-weight: 600;
         }
 
         /* Dropzone */
         .dropzone {
-            border: 2px dashed rgba(255, 255, 255, 0.15);
+            border: 2px dashed rgba(255, 255, 255, 0.16);
             border-radius: var(--radius-md);
-            padding: 2.2rem 1.2rem;
+            padding: 2.2rem 1.25rem;
             text-align: center;
             background: rgba(255, 255, 255, 0.02);
             cursor: pointer;
@@ -280,8 +266,8 @@
         }
 
         .dropzone:hover, .dropzone.dragover {
-            border-color: var(--accent-primary);
-            background: rgba(99, 102, 241, 0.06);
+            border-color: var(--primary);
+            background: rgba(99, 102, 241, 0.08);
         }
 
         .dropzone input[type="file"] {
@@ -295,63 +281,83 @@
         }
 
         .dropzone i {
-            font-size: 2.4rem;
+            font-size: 2.5rem;
             color: #818cf8;
             margin-bottom: 0.6rem;
         }
 
-        .file-selected-card {
-            display: none;
-            background: rgba(16, 185, 129, 0.1);
-            border: 1px solid rgba(16, 185, 129, 0.3);
-            padding: 0.75rem 1rem;
-            border-radius: var(--radius-sm);
+        /* File List Queue */
+        .file-queue {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            max-height: 160px;
+            overflow-y: auto;
             margin-bottom: 1rem;
-            align-items: center;
-            justify-content: space-between;
         }
 
-        .file-info {
+        .file-item {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid var(--border-subtle);
+            padding: 0.6rem 0.9rem;
+            border-radius: var(--radius-sm);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 0.85rem;
+        }
+
+        .file-meta {
             display: flex;
             align-items: center;
             gap: 0.6rem;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .file-remove-btn {
+            background: transparent;
+            border: none;
+            color: #f87171;
+            cursor: pointer;
+            padding: 4px;
             font-size: 0.9rem;
-            color: #a7f3d0;
         }
 
         /* Textarea */
-        textarea.custom-textarea {
+        textarea.custom-input {
             width: 100%;
-            height: 200px;
-            background: rgba(0, 0, 0, 0.3);
-            border: 1px solid var(--border-color);
+            height: 180px;
+            background: rgba(0, 0, 0, 0.35);
+            border: 1px solid var(--border-subtle);
             border-radius: var(--radius-md);
             padding: 1rem;
             color: #fff;
             font-size: 0.9rem;
+            line-height: 1.5;
             resize: vertical;
             outline: none;
-            line-height: 1.5;
-            flex: 1;
             transition: border-color 0.2s;
+            flex: 1;
         }
 
-        textarea.custom-textarea:focus {
-            border-color: var(--accent-primary);
+        textarea.custom-input:focus {
+            border-color: var(--primary);
             box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.2);
         }
 
-        .quick-action-bar {
+        .quick-row {
             display: flex;
-            justify-content: flex-end;
-            margin-top: 0.6rem;
+            align-items: center;
             gap: 0.5rem;
+            margin-top: 0.6rem;
             flex-wrap: wrap;
         }
 
-        .sample-btn {
+        .quick-btn {
             background: rgba(255, 255, 255, 0.05);
-            border: 1px solid var(--border-color);
+            border: 1px solid var(--border-subtle);
             color: var(--text-muted);
             font-size: 0.78rem;
             padding: 0.35rem 0.75rem;
@@ -360,161 +366,345 @@
             transition: all 0.2s;
         }
 
-        .sample-btn:hover {
+        .quick-btn:hover {
             background: rgba(99, 102, 241, 0.2);
             color: #fff;
-            border-color: var(--accent-primary);
+            border-color: var(--primary);
         }
 
-        /* Submit Button */
-        .submit-wrapper {
+        /* Action Button */
+        .action-row {
             text-align: center;
-            margin: 1rem 0 2.5rem;
+            margin: 1.5rem 0 2.5rem;
         }
 
-        .btn-primary {
-            background: var(--accent-gradient);
+        .btn-analyze {
+            background: var(--primary-gradient);
             border: none;
             color: #fff;
-            padding: 1rem 2.8rem;
+            padding: 1rem 3rem;
             font-size: 1.1rem;
             font-weight: 600;
             border-radius: var(--radius-full);
             cursor: pointer;
-            box-shadow: 0 4px 20px rgba(99, 102, 241, 0.4);
+            box-shadow: 0 4px 25px rgba(99, 102, 241, 0.4);
             transition: all 0.25s ease;
             display: inline-flex;
             align-items: center;
             gap: 0.75rem;
         }
 
-        .btn-primary:hover {
+        .btn-analyze:hover {
             transform: translateY(-2px);
-            box-shadow: 0 6px 28px rgba(99, 102, 241, 0.6);
+            box-shadow: 0 6px 30px rgba(99, 102, 241, 0.6);
         }
 
-        .btn-primary:disabled {
-            opacity: 0.6;
+        .btn-analyze:disabled {
+            opacity: 0.65;
             cursor: not-allowed;
-            transform: none;
+            transform: none !important;
         }
 
-        /* Single Results Card */
-        .results-container {
-            background: var(--bg-card);
-            border: 1px solid var(--border-color);
+        /* Multi-Stage Loading Tracker */
+        .processing-modal-backdrop {
+            position: fixed;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            background: rgba(0, 0, 0, 0.75);
+            backdrop-filter: blur(8px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .processing-card {
+            background: #111827;
+            border: 1px solid var(--border-glow);
             border-radius: var(--radius-lg);
             padding: 2.25rem;
-            backdrop-filter: blur(16px);
-            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
+            max-width: 500px;
+            width: 90%;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
+            animation: fadeIn 0.3s ease;
+        }
+
+        .progress-bar-container {
+            height: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: var(--radius-full);
+            overflow: hidden;
+            margin: 1.25rem 0 1.5rem;
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            width: 0%;
+            background: var(--primary-gradient);
+            border-radius: var(--radius-full);
+            transition: width 0.35s ease;
+        }
+
+        .stage-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .stage-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-size: 0.88rem;
+            color: var(--text-muted);
+            transition: all 0.25s;
+        }
+
+        .stage-item.completed {
+            color: #6ee7b7;
+        }
+
+        .stage-item.current {
+            color: #fff;
+            font-weight: 600;
+        }
+
+        .stage-item i {
+            width: 18px;
+            text-align: center;
+        }
+
+        /* Results Dashboard */
+        #results-dashboard {
             display: none;
             animation: fadeIn 0.4s ease-in-out;
         }
 
-        .score-hero {
-            display: flex;
-            align-items: center;
-            justify-content: space-around;
-            flex-wrap: wrap;
-            gap: 2rem;
-            padding-bottom: 2rem;
-            border-bottom: 1px solid var(--border-color);
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(15px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Summary Metrics Cards */
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1.25rem;
             margin-bottom: 2rem;
         }
 
-        .score-dial {
-            position: relative;
-            width: 150px;
-            height: 150px;
+        @media (max-width: 900px) {
+            .metrics-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        @media (max-width: 500px) {
+            .metrics-grid {
+                grid-template-columns: 1fr;
+            }
         }
 
-        .score-circle-svg {
-            transform: rotate(-90deg);
-            width: 100%;
-            height: 100%;
+        .metric-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-md);
+            padding: 1.4rem;
+            display: flex;
+            align-items: center;
+            gap: 1.1rem;
+            backdrop-filter: blur(14px);
         }
 
-        .circle-bg {
-            fill: none;
-            stroke: rgba(255, 255, 255, 0.08);
-            stroke-width: 10;
+        .metric-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: var(--radius-sm);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.35rem;
         }
 
-        .circle-progress {
-            fill: none;
-            stroke: url(#score-gradient);
-            stroke-width: 10;
-            stroke-linecap: round;
-            stroke-dasharray: 408;
-            stroke-dashoffset: 408;
-            transition: stroke-dashoffset 1.2s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        .score-number-overlay {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            text-align: center;
-        }
-
-        .score-val {
-            font-size: 2.2rem;
+        .metric-val {
+            font-size: 1.6rem;
             font-weight: 800;
             color: #fff;
-            line-height: 1;
+            line-height: 1.1;
         }
 
-        .score-lbl {
+        .metric-lbl {
             font-size: 0.75rem;
             color: var(--text-muted);
             text-transform: uppercase;
             letter-spacing: 0.05em;
-            margin-top: 4px;
-        }
-
-        .score-stats {
-            display: flex;
-            gap: 1.5rem;
-            flex-wrap: wrap;
-        }
-
-        .stat-box {
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid var(--border-color);
-            border-radius: var(--radius-md);
-            padding: 1rem 1.4rem;
-            text-align: center;
-            min-width: 120px;
-        }
-
-        .stat-val {
-            font-size: 1.4rem;
-            font-weight: 700;
-            color: #fff;
-        }
-
-        .stat-lbl {
-            font-size: 0.75rem;
-            color: var(--text-muted);
             margin-top: 2px;
         }
 
-        /* Skill Gap Chips */
-        .chip-container {
+        /* Charts Grid */
+        .charts-grid {
+            display: grid;
+            grid-template-columns: 1.4fr 1fr;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        @media (max-width: 880px) {
+            .charts-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .chart-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-lg);
+            padding: 1.5rem;
+            backdrop-filter: blur(14px);
+        }
+
+        .chart-head {
             display: flex;
-            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.25rem;
+        }
+
+        .chart-title {
+            font-size: 1.05rem;
+            font-weight: 600;
+            color: #fff;
+            display: flex;
+            align-items: center;
             gap: 0.5rem;
         }
 
-        .chip {
-            padding: 0.35rem 0.75rem;
+        .chart-box {
+            position: relative;
+            height: 250px;
+            width: 100%;
+        }
+
+        /* Ranking Leaderboard Table */
+        .ranking-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
+            margin-bottom: 2rem;
+        }
+
+        .ranking-toolbar {
+            padding: 1.25rem 1.75rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border-subtle);
+            background: rgba(255, 255, 255, 0.02);
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .export-group {
+            display: flex;
+            gap: 0.6rem;
+            flex-wrap: wrap;
+        }
+
+        .btn-export {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border-subtle);
+            color: var(--text-body);
+            padding: 0.45rem 0.95rem;
             border-radius: var(--radius-full);
             font-size: 0.8rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+
+        .btn-export:hover {
+            background: rgba(99, 102, 241, 0.2);
+            border-color: var(--primary);
+            color: #fff;
+        }
+
+        table.ranking-table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+        }
+
+        table.ranking-table th {
+            padding: 1rem 1.25rem;
+            color: var(--text-muted);
+            font-size: 0.78rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            border-bottom: 1px solid var(--border-subtle);
+            background: rgba(0, 0, 0, 0.2);
+        }
+
+        table.ranking-table td {
+            padding: 1.1rem 1.25rem;
+            border-bottom: 1px solid var(--border-subtle);
+            font-size: 0.88rem;
+            vertical-align: middle;
+        }
+
+        table.ranking-table tr.clickable-row {
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        table.ranking-table tr.clickable-row:hover {
+            background: rgba(99, 102, 241, 0.08);
+        }
+
+        .rank-badge {
+            width: 30px;
+            height: 30px;
+            border-radius: var(--radius-full);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 0.82rem;
+        }
+
+        .rank-1 { background: rgba(245, 158, 11, 0.2); color: #fbbf24; border: 1px solid #f59e0b; }
+        .rank-2 { background: rgba(156, 163, 175, 0.2); color: #e5e7eb; border: 1px solid #9ca3af; }
+        .rank-3 { background: rgba(180, 83, 9, 0.2); color: #d97706; border: 1px solid #b45309; }
+        .rank-other { background: rgba(255, 255, 255, 0.05); color: var(--text-muted); }
+
+        .progress-bar-wrap {
+            height: 8px;
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: var(--radius-full);
+            overflow: hidden;
+            width: 100px;
+            display: inline-block;
+            vertical-align: middle;
+            margin-right: 8px;
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            background: var(--primary-gradient);
+            border-radius: var(--radius-full);
+        }
+
+        .chip {
+            padding: 0.25rem 0.6rem;
+            border-radius: var(--radius-full);
+            font-size: 0.75rem;
             font-weight: 500;
             display: inline-flex;
             align-items: center;
-            gap: 0.35rem;
+            gap: 0.3rem;
         }
 
         .chip.matched {
@@ -529,166 +719,121 @@
             color: #fda4af;
         }
 
-        /* Recommendations */
-        .recs-card {
-            background: rgba(99, 102, 241, 0.06);
-            border: 1px solid rgba(99, 102, 241, 0.2);
-            border-radius: var(--radius-md);
+        /* Candidate Detail Modal */
+        .modal-backdrop {
+            position: fixed;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(12px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
             padding: 1.5rem;
-            margin-top: 1.75rem;
         }
 
-        .recs-card h4 {
-            font-size: 1.05rem;
-            margin-bottom: 0.85rem;
+        .modal-card {
+            background: #111827;
+            border: 1px solid var(--border-glow);
+            border-radius: var(--radius-lg);
+            max-width: 800px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.6);
+            display: flex;
+            flex-direction: column;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .modal-head {
+            padding: 1.5rem 2rem;
+            border-bottom: 1px solid var(--border-subtle);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.02);
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        .modal-body {
+            padding: 2rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1.75rem;
+        }
+
+        .explain-box {
+            background: rgba(99, 102, 241, 0.08);
+            border: 1px solid rgba(99, 102, 241, 0.25);
+            border-radius: var(--radius-md);
+            padding: 1.25rem 1.5rem;
+        }
+
+        .explain-box h4 {
+            color: #a5b4fc;
+            margin-bottom: 0.75rem;
             display: flex;
             align-items: center;
             gap: 0.5rem;
-            color: #a5b4fc;
+            font-size: 1rem;
         }
 
-        .recs-list {
+        .explain-list {
             list-style: none;
             display: flex;
             flex-direction: column;
-            gap: 0.65rem;
+            gap: 0.5rem;
+            font-size: 0.88rem;
+            color: #e2e8f0;
         }
 
-        .recs-list li {
-            font-size: 0.9rem;
-            color: #e2e8f0;
+        .explain-list li {
             display: flex;
             align-items: flex-start;
-            gap: 0.65rem;
+            gap: 0.5rem;
             line-height: 1.5;
         }
 
-        .recs-list li i {
+        .explain-list li i {
             color: #818cf8;
             margin-top: 4px;
         }
 
-        /* Multi-Resume Ranking Leaderboard */
-        .ranking-card {
-            background: var(--bg-card);
-            border: 1px solid var(--border-color);
-            border-radius: var(--radius-lg);
-            overflow: hidden;
-            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
-            display: none;
-            animation: fadeIn 0.4s ease-in-out;
-            margin-top: 1rem;
-        }
-
-        .ranking-header {
-            padding: 1.25rem 1.75rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 1px solid var(--border-color);
-            background: rgba(255, 255, 255, 0.02);
-            flex-wrap: wrap;
-            gap: 1rem;
-        }
-
-        .btn-csv {
-            background: rgba(16, 185, 129, 0.15);
-            border: 1px solid rgba(16, 185, 129, 0.3);
-            color: #6ee7b7;
-            padding: 0.55rem 1.15rem;
-            border-radius: var(--radius-full);
-            font-size: 0.85rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s;
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .btn-csv:hover {
-            background: rgba(16, 185, 129, 0.25);
-            color: #fff;
-        }
-
-        table.ranking-table {
-            width: 100%;
-            border-collapse: collapse;
-            text-align: left;
-        }
-
-        table.ranking-table th {
-            padding: 1rem 1.25rem;
+        .resume-preview-box {
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-sm);
+            padding: 1rem;
+            font-size: 0.82rem;
             color: var(--text-muted);
-            font-size: 0.8rem;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            border-bottom: 1px solid var(--border-color);
-            background: rgba(0, 0, 0, 0.2);
+            max-height: 140px;
+            overflow-y: auto;
+            line-height: 1.6;
         }
 
-        table.ranking-table td {
-            padding: 1.1rem 1.25rem;
-            border-bottom: 1px solid var(--border-color);
-            font-size: 0.9rem;
-            vertical-align: middle;
-        }
-
-        table.ranking-table tr:hover {
-            background: rgba(255, 255, 255, 0.03);
-        }
-
-        .rank-badge {
-            width: 32px;
-            height: 32px;
-            border-radius: var(--radius-full);
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 700;
-            font-size: 0.85rem;
-        }
-
-        .rank-1 { background: rgba(245, 158, 11, 0.2); color: #fbbf24; border: 1px solid #f59e0b; }
-        .rank-2 { background: rgba(156, 163, 175, 0.2); color: #e5e7eb; border: 1px solid #9ca3af; }
-        .rank-3 { background: rgba(180, 83, 9, 0.2); color: #d97706; border: 1px solid #b45309; }
-        .rank-other { background: rgba(255, 255, 255, 0.05); color: var(--text-muted); }
-
-        .progress-bar-wrap {
-            height: 8px;
-            background: rgba(255, 255, 255, 0.08);
-            border-radius: var(--radius-full);
-            overflow: hidden;
-            width: 110px;
-            display: inline-block;
-            vertical-align: middle;
-            margin-right: 8px;
-        }
-
-        .progress-bar-fill {
-            height: 100%;
-            background: var(--accent-gradient);
-            border-radius: var(--radius-full);
-        }
-
-        /* Toast & Footer */
+        /* Toast */
         .toast {
             position: fixed;
             bottom: 2rem;
             right: 2rem;
             background: #ef4444;
             color: #fff;
-            padding: 0.9rem 1.4rem;
+            padding: 1rem 1.5rem;
             border-radius: var(--radius-sm);
-            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.4);
             display: none;
-            z-index: 200;
+            z-index: 3000;
+            animation: fadeIn 0.3s ease;
         }
 
+        /* Footer */
         footer {
             text-align: center;
             padding: 2rem;
-            border-top: 1px solid var(--border-color);
+            border-top: 1px solid var(--border-subtle);
             color: var(--text-subtle);
             font-size: 0.85rem;
         }
@@ -698,259 +843,210 @@
 
     <!-- Header Navigation -->
     <header>
-        <a href="/" class="logo">
-            <div class="logo-icon">
+        <a href="/" class="brand-wrap">
+            <div class="brand-logo">
                 <i class="fa-solid fa-file-shield"></i>
             </div>
-            <span>Match<span class="gradient-text">ATS</span> AI</span>
+            <div>
+                <div style="font-size: 1.25rem; font-weight: 700;">AI Resume<span class="gradient-text">Screen</span></div>
+                <div style="font-size: 0.72rem; color: var(--text-muted);">TF-IDF & Cosine Similarity System</div>
+            </div>
         </a>
 
-        <div class="nav-switch">
-            <button class="nav-btn active" onclick="switchMainTab('single', this)">
-                <i class="fa-solid fa-file-invoice"></i> Single Resume
-            </button>
-            <button class="nav-btn" onclick="switchMainTab('ranking', this)">
-                <i class="fa-solid fa-ranking-star"></i> Multi-Resume Ranking
-            </button>
+        <div class="header-badge">
+            <i class="fa-solid fa-code-branch"></i> Software Engineering Prototype
         </div>
     </header>
 
-    <!-- Main Content -->
-    <main class="main-container">
+    <!-- Main Container -->
+    <main class="container">
         <!-- Hero Section -->
-        <section class="hero-section">
-            <h1 class="hero-title">AI Resume & Job Matcher</h1>
+        <section class="hero">
+            <h1 class="hero-title">AI Resume Screening & Ranking System</h1>
             <p class="hero-subtitle">
-                Evaluate match compatibility, analyze skill gaps, and rank multiple candidate resumes using intelligent NLP & Cosine Similarity.
+                Automate resume evaluation using Natural Language Processing (NLP), TF-IDF feature vectorization, Cosine Similarity matching, and skill gap analysis.
             </p>
         </section>
 
-        <!-- ======================================================= -->
-        <!-- TAB 1: SINGLE RESUME MATCHING & SKILL GAP ANALYSIS -->
-        <!-- ======================================================= -->
-        <div id="view-single" class="view-panel active">
-            <form id="single-form">
-                <div class="grid-2col">
-                    <!-- Left: Resume Input -->
-                    <div class="panel-card">
-                        <div class="panel-header">
-                            <div class="panel-title">
-                                <i class="fa-regular fa-file-lines"></i>
-                                <span>1. Your Resume</span>
-                            </div>
-                        </div>
-
-                        <div class="input-tabs">
-                            <button type="button" class="tab-btn active" id="tab-upload" onclick="switchInputMode('upload')">
-                                <i class="fa-solid fa-arrow-up-from-bracket"></i> Upload PDF
-                            </button>
-                            <button type="button" class="tab-btn" id="tab-paste" onclick="switchInputMode('paste')">
-                                <i class="fa-solid fa-keyboard"></i> Paste Text
-                            </button>
-                        </div>
-
-                        <!-- Upload PDF Dropzone -->
-                        <div id="upload-container">
-                            <div class="dropzone" id="single-dropzone">
-                                <i class="fa-solid fa-cloud-arrow-up"></i>
-                                <h4 style="margin-bottom: 0.35rem;">Drag & drop your Resume PDF</h4>
-                                <p style="font-size: 0.82rem; color: var(--text-muted);">Supports .pdf format (up to 32MB)</p>
-                                <input type="file" id="single_pdf" name="resume_pdf" accept=".pdf">
-                            </div>
-
-                            <div class="file-selected-card" id="single-file-card">
-                                <div class="file-info">
-                                    <i class="fa-solid fa-file-pdf"></i>
-                                    <span id="single-file-name">resume.pdf</span>
-                                </div>
-                                <i class="fa-solid fa-xmark" style="cursor: pointer; color: #f87171;" onclick="clearSingleFile()"></i>
-                            </div>
-                        </div>
-
-                        <!-- Paste Text Area -->
-                        <div id="paste-container" style="display: none; flex: 1; flex-direction: column;">
-                            <textarea class="custom-textarea" id="single_resume_text" name="resume_text" placeholder="Paste full resume text here (Summary, Skills, Experience)..."></textarea>
-                        </div>
-
-                        <div class="quick-action-bar">
-                            <button type="button" class="sample-btn" onclick="fillSampleSingleResume()">
-                                <i class="fa-regular fa-lightbulb"></i> Load Sample Resume
-                            </button>
-                        </div>
-                    </div>
-
-                    <!-- Right: Job Description Input -->
-                    <div class="panel-card">
-                        <div class="panel-header">
-                            <div class="panel-title">
-                                <i class="fa-solid fa-briefcase"></i>
-                                <span>2. Target Job Description</span>
-                            </div>
-                        </div>
-
-                        <div style="flex: 1; display: flex; flex-direction: column;">
-                            <textarea class="custom-textarea" id="single_jd_text" name="job_description" placeholder="Paste target job requirements, skills, and qualifications here..."></textarea>
-                        </div>
-
-                        <div class="quick-action-bar">
-                            <button type="button" class="sample-btn" onclick="fillSampleSingleJob()">
-                                <i class="fa-regular fa-lightbulb"></i> Load Sample Job (Python/Fullstack)
-                            </button>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="submit-wrapper">
-                    <button type="submit" class="btn-primary" id="single-btn">
-                        <span>Analyze Match & Skill Gap</span>
-                        <i class="fa-solid fa-arrow-right"></i>
-                    </button>
-                </div>
-            </form>
-
-            <!-- Results Card -->
-            <div class="results-container" id="single-results">
-                <div class="score-hero">
-                    <div class="score-dial">
-                        <svg class="score-circle-svg" viewBox="0 0 150 150">
-                            <defs>
-                                <linearGradient id="score-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                                    <stop offset="0%" stop-color="#6366f1" />
-                                    <stop offset="50%" stop-color="#a855f7" />
-                                    <stop offset="100%" stop-color="#ec4899" />
-                                </linearGradient>
-                            </defs>
-                            <circle class="circle-bg" cx="75" cy="75" r="65"></circle>
-                            <circle class="circle-progress" id="score-circle" cx="75" cy="75" r="65"></circle>
-                        </svg>
-                        <div class="score-number-overlay">
-                            <div class="score-val" id="score-value">0%</div>
-                            <div class="score-lbl">Match Score</div>
-                        </div>
-                    </div>
-
-                    <div class="score-stats">
-                        <div class="stat-box">
-                            <div class="stat-val" id="matched-count" style="color: #6ee7b7;">0</div>
-                            <div class="stat-lbl">Matched Skills</div>
-                        </div>
-                        <div class="stat-box">
-                            <div class="stat-val" id="missing-count" style="color: #fda4af;">0</div>
-                            <div class="stat-lbl">Missing Skills</div>
-                        </div>
-                        <div class="stat-box">
-                            <div class="stat-val" id="resume-words">0</div>
-                            <div class="stat-lbl">Resume Words</div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Skill Gap Breakdown -->
-                <div class="grid-2col" style="margin-bottom: 0;">
-                    <div class="panel-card" style="background: rgba(0, 0, 0, 0.25);">
-                        <h4 style="color: #6ee7b7; margin-bottom: 0.85rem; font-size: 0.95rem;">
-                            <i class="fa-solid fa-circle-check"></i> Matched Technical Skills
-                        </h4>
-                        <div class="chip-container" id="matched-chips"></div>
-                    </div>
-
-                    <div class="panel-card" style="background: rgba(0, 0, 0, 0.25);">
-                        <h4 style="color: #fda4af; margin-bottom: 0.85rem; font-size: 0.95rem;">
-                            <i class="fa-solid fa-circle-exclamation"></i> Missing Job Skills (Skill Gap)
-                        </h4>
-                        <div class="chip-container" id="missing-chips"></div>
-                    </div>
-                </div>
-
-                <!-- Recommendations -->
-                <div class="recs-card">
-                    <h4>
-                        <i class="fa-solid fa-wand-magic-sparkles"></i>
-                        <span>ATS Gap & Optimization Recommendations</span>
-                    </h4>
-                    <ul class="recs-list" id="recommendations-list"></ul>
-                </div>
-            </div>
+        <!-- System Pipeline Workflow Tracker -->
+        <div class="pipeline-bar">
+            <div class="pipeline-step active"><i class="fa-solid fa-arrow-right-to-bracket"></i> 1. Input</div>
+            <i class="fa-solid fa-chevron-right pipeline-arrow"></i>
+            <div class="pipeline-step"><i class="fa-solid fa-filter"></i> 2. NLP Preprocessing</div>
+            <i class="fa-solid fa-chevron-right pipeline-arrow"></i>
+            <div class="pipeline-step"><i class="fa-solid fa-calculator"></i> 3. TF-IDF & Cosine</div>
+            <i class="fa-solid fa-chevron-right pipeline-arrow"></i>
+            <div class="pipeline-step"><i class="fa-solid fa-layer-group"></i> 4. Skill Gap Matrix</div>
+            <i class="fa-solid fa-chevron-right pipeline-arrow"></i>
+            <div class="pipeline-step"><i class="fa-solid fa-trophy"></i> 5. Candidate Ranking</div>
         </div>
 
-        <!-- ======================================================= -->
-        <!-- TAB 2: MULTI-RESUME BATCH RANKING LEADERBOARD -->
-        <!-- ======================================================= -->
-        <div id="view-ranking" class="view-panel">
-            <form id="ranking-form">
-                <div class="grid-2col">
-                    <!-- Left: Multi-PDF Upload -->
-                    <div class="panel-card">
-                        <div class="panel-header">
-                            <div class="panel-title">
-                                <i class="fa-solid fa-folder-open"></i>
-                                <span>Upload Multiple Resumes</span>
-                            </div>
+        <!-- Input Form Section -->
+        <form id="screening-form">
+            <div class="grid-2col">
+                <!-- Left: Multiple Resume Upload -->
+                <div class="panel">
+                    <div class="panel-head">
+                        <div class="panel-title">
+                            <i class="fa-regular fa-folder-open" style="color: #818cf8;"></i>
+                            <span>1. Upload Candidate Resumes</span>
                         </div>
-
-                        <div class="dropzone" id="batch-dropzone">
-                            <i class="fa-solid fa-file-circle-plus"></i>
-                            <h4 style="margin-bottom: 0.35rem;">Drag & drop Multiple Candidate PDFs</h4>
-                            <p style="font-size: 0.82rem; color: var(--text-muted);">Select multiple .pdf files to compare and rank</p>
-                            <input type="file" id="batch_pdfs" name="resumes_pdf" multiple accept=".pdf">
-                        </div>
-
-                        <div class="file-selected-card" id="batch-file-card">
-                            <div class="file-info">
-                                <i class="fa-solid fa-files"></i>
-                                <span id="batch-file-name">0 PDFs Selected</span>
-                            </div>
-                            <i class="fa-solid fa-xmark" style="cursor: pointer; color: #f87171;" onclick="clearBatchFiles()"></i>
-                        </div>
-
-                        <div class="quick-action-bar">
-                            <button type="button" class="sample-btn" onclick="runRankingDemo()">
-                                <i class="fa-solid fa-flask"></i> Load Demo Candidates
-                            </button>
-                        </div>
+                        <span class="badge-pill">PDF & TXT Supported</span>
                     </div>
 
-                    <!-- Right: Benchmark Job Description -->
-                    <div class="panel-card">
-                        <div class="panel-header">
-                            <div class="panel-title">
-                                <i class="fa-solid fa-briefcase"></i>
-                                <span>Benchmark Job Description</span>
-                            </div>
-                        </div>
+                    <!-- Dropzone -->
+                    <div class="dropzone" id="dropzone">
+                        <i class="fa-solid fa-cloud-arrow-up"></i>
+                        <h4 style="margin-bottom: 0.35rem;">Drag & drop Resumes here</h4>
+                        <p style="font-size: 0.8rem; color: var(--text-muted);">Supports .pdf and .txt files (Single or Multiple)</p>
+                        <input type="file" id="file_input" multiple accept=".pdf,.txt">
+                    </div>
 
-                        <div style="flex: 1; display: flex; flex-direction: column;">
-                            <textarea class="custom-textarea" id="ranking_jd_text" name="job_description" placeholder="Paste the target job description to rank all candidate resumes against..."></textarea>
-                        </div>
+                    <!-- Uploaded File Queue -->
+                    <div class="file-queue" id="file-queue-list"></div>
 
-                        <div class="quick-action-bar">
-                            <button type="button" class="sample-btn" onclick="fillSampleRankingJob()">
-                                <i class="fa-regular fa-lightbulb"></i> Load Benchmark Job
-                            </button>
-                        </div>
+                    <div class="quick-row">
+                        <span style="font-size: 0.75rem; color: var(--text-subtle);">Demo Simulation:</span>
+                        <button type="button" class="quick-btn" onclick="loadDemoCandidates()">
+                            <i class="fa-solid fa-flask"></i> Load 4 Demo Applicants
+                        </button>
+                        <button type="button" class="quick-btn" onclick="clearAllFiles()" style="margin-left: auto;">
+                            <i class="fa-solid fa-trash-can"></i> Clear All
+                        </button>
                     </div>
                 </div>
 
-                <div class="submit-wrapper">
-                    <button type="submit" class="btn-primary" id="ranking-btn">
-                        <span>Rank Candidates & Generate Leaderboard</span>
-                        <i class="fa-solid fa-ranking-star"></i>
-                    </button>
-                </div>
-            </form>
+                <!-- Right: Job Description -->
+                <div class="panel">
+                    <div class="panel-head">
+                        <div class="panel-title">
+                            <i class="fa-solid fa-briefcase" style="color: #ec4899;"></i>
+                            <span>2. Target Job Description</span>
+                        </div>
+                        <span class="badge-pill">Benchmark Role</span>
+                    </div>
 
-            <!-- Leaderboard Card -->
-            <div class="ranking-card" id="ranking-results">
-                <div class="ranking-header">
+                    <div style="flex: 1; display: flex; flex-direction: column;">
+                        <textarea class="custom-input" id="job_description_input" placeholder="Paste target job requirements, qualifications, and core technical skills here..."></textarea>
+                    </div>
+
+                    <div class="quick-row">
+                        <span style="font-size: 0.75rem; color: var(--text-subtle);">Sample Profiles:</span>
+                        <button type="button" class="quick-btn" onclick="loadSampleJD('python')">Senior Python Engineer</button>
+                        <button type="button" class="quick-btn" onclick="loadSampleJD('ml')">Data Scientist / ML</button>
+                        <button type="button" class="quick-btn" onclick="loadSampleJD('fullstack')">Full Stack Dev</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Submit Action -->
+            <div class="action-row">
+                <button type="submit" class="btn-analyze" id="btn-submit">
+                    <span>Analyze Resumes & Rank Candidates</span>
+                    <i class="fa-solid fa-arrow-right"></i>
+                </button>
+            </div>
+        </form>
+
+        <!-- ======================================================== -->
+        <!-- RESULTS DASHBOARD -->
+        <!-- ======================================================== -->
+        <section id="results-dashboard">
+            <!-- 1. Summary Metrics Cards -->
+            <div class="metrics-grid">
+                <div class="metric-card">
+                    <div class="metric-icon" style="background: rgba(99, 102, 241, 0.15); color: #818cf8;">
+                        <i class="fa-solid fa-users"></i>
+                    </div>
                     <div>
-                        <h3 style="font-size: 1.15rem; color: #fff;">
-                            <i class="fa-solid fa-trophy" style="color: #f59e0b; margin-right: 6px;"></i> Candidate Ranking Leaderboard
-                        </h3>
-                        <p style="font-size: 0.8rem; color: var(--text-muted);" id="ranking-summary">Ranked candidates sorted by compatibility</p>
+                        <div class="metric-val" id="metric-total-candidates">0</div>
+                        <div class="metric-lbl">Candidates Analyzed</div>
                     </div>
-                    <button class="btn-csv" onclick="downloadCSVReport()">
-                        <i class="fa-solid fa-file-csv"></i> Download CSV Report
-                    </button>
+                </div>
+
+                <div class="metric-card">
+                    <div class="metric-icon" style="background: rgba(245, 158, 11, 0.15); color: #fbbf24;">
+                        <i class="fa-solid fa-crown"></i>
+                    </div>
+                    <div>
+                        <div class="metric-val" id="metric-top-candidate" style="font-size: 1.15rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 160px;">N/A</div>
+                        <div class="metric-lbl">Top Candidate</div>
+                    </div>
+                </div>
+
+                <div class="metric-card">
+                    <div class="metric-icon" style="background: rgba(16, 185, 129, 0.15); color: #6ee7b7;">
+                        <i class="fa-solid fa-chart-line"></i>
+                    </div>
+                    <div>
+                        <div class="metric-val" id="metric-highest-score">0%</div>
+                        <div class="metric-lbl">Highest Match</div>
+                    </div>
+                </div>
+
+                <div class="metric-card">
+                    <div class="metric-icon" style="background: rgba(6, 182, 212, 0.15); color: #67e8f9;">
+                        <i class="fa-solid fa-calculator"></i>
+                    </div>
+                    <div>
+                        <div class="metric-val" id="metric-average-score">0%</div>
+                        <div class="metric-lbl">Average Match</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 2. Visualizations Grid (Bar & Radar Charts) -->
+            <div class="charts-grid">
+                <!-- Bar Chart: Candidate Ranking Comparison -->
+                <div class="chart-card">
+                    <div class="chart-head">
+                        <div class="chart-title">
+                            <i class="fa-solid fa-chart-simple" style="color: #818cf8;"></i>
+                            <span>Candidate Score Comparison</span>
+                        </div>
+                        <span class="badge-pill">TF-IDF Cosine Similarity %</span>
+                    </div>
+                    <div class="chart-box">
+                        <canvas id="rankingBarChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Radar / Doughnut Chart: Skill Coverage Breakdown -->
+                <div class="chart-card">
+                    <div class="chart-head">
+                        <div class="chart-title">
+                            <i class="fa-solid fa-pie-chart" style="color: #ec4899;"></i>
+                            <span>Skill Match Coverage</span>
+                        </div>
+                        <span class="badge-pill">Matched vs Missing</span>
+                    </div>
+                    <div class="chart-box">
+                        <canvas id="skillRadarChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 3. Candidate Ranking Table Card -->
+            <div class="ranking-card">
+                <div class="ranking-toolbar">
+                    <div>
+                        <h3 style="font-size: 1.15rem; color: #fff; display: flex; align-items: center; gap: 0.5rem;">
+                            <i class="fa-solid fa-trophy" style="color: #f59e0b;"></i> Candidate Ranking Leaderboard
+                        </h3>
+                        <p style="font-size: 0.8rem; color: var(--text-muted);">Click on any candidate row to view detailed match breakdown & explanation.</p>
+                    </div>
+
+                    <div class="export-group">
+                        <button class="btn-export" onclick="exportCSVReport()">
+                            <i class="fa-solid fa-file-csv" style="color: #10b981;"></i> Export CSV
+                        </button>
+                        <button class="btn-export" onclick="exportJSONReport()">
+                            <i class="fa-solid fa-file-code" style="color: #38bdf8;"></i> Export JSON
+                        </button>
+                        <button class="btn-export" onclick="window.print()">
+                            <i class="fa-solid fa-print"></i> Print Report
+                        </button>
+                    </div>
                 </div>
 
                 <div style="overflow-x: auto;">
@@ -962,372 +1058,688 @@
                                 <th>Match Score</th>
                                 <th>Matched Skills</th>
                                 <th>Missing Skills (Gap)</th>
+                                <th>Action</th>
                             </tr>
                         </thead>
                         <tbody id="ranking-table-body"></tbody>
                     </table>
                 </div>
             </div>
-        </div>
+        </section>
     </main>
 
+    <!-- ======================================================== -->
+    <!-- MULTI-STAGE PROGRESS MODAL -->
+    <!-- ======================================================== -->
+    <div class="processing-modal-backdrop" id="processing-modal">
+        <div class="processing-card">
+            <h3 style="font-size: 1.25rem; color: #fff; margin-bottom: 0.4rem;">
+                <i class="fa-solid fa-gear fa-spin" style="color: #818cf8; margin-right: 6px;"></i> Processing Resumes
+            </h3>
+            <p style="font-size: 0.82rem; color: var(--text-muted);">Executing automated NLP screening pipeline...</p>
+
+            <div class="progress-bar-container">
+                <div class="progress-bar-fill" id="pipeline-progress-bar"></div>
+            </div>
+
+            <ul class="stage-list" id="stage-list">
+                <li class="stage-item" id="stage-1"><i class="fa-regular fa-circle"></i> 1. Validating inputs & format constraints</li>
+                <li class="stage-item" id="stage-2"><i class="fa-regular fa-circle"></i> 2. Reading resumes & extracting text</li>
+                <li class="stage-item" id="stage-3"><i class="fa-regular fa-circle"></i> 3. Text preprocessing & NLTK stopword filtering</li>
+                <li class="stage-item" id="stage-4"><i class="fa-regular fa-circle"></i> 4. Computing TF-IDF & Cosine Similarity</li>
+                <li class="stage-item" id="stage-5"><i class="fa-regular fa-circle"></i> 5. Analyzing skills & gap matrix</li>
+                <li class="stage-item" id="stage-6"><i class="fa-regular fa-circle"></i> 6. Ranking candidates & preparing dashboard</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- ======================================================== -->
+    <!-- CANDIDATE DETAIL MODAL -->
+    <!-- ======================================================== -->
+    <div class="modal-backdrop" id="candidate-modal">
+        <div class="modal-card">
+            <div class="modal-head">
+                <div>
+                    <h3 id="modal-candidate-name" style="color: #fff; font-size: 1.3rem;">Candidate Details</h3>
+                    <p style="font-size: 0.8rem; color: var(--text-muted);" id="modal-candidate-meta">Rank & Match Score Breakdown</p>
+                </div>
+                <button type="button" style="background: transparent; border: none; color: var(--text-muted); font-size: 1.3rem; cursor: pointer;" onclick="closeCandidateModal()">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <div class="modal-body">
+                <!-- Top Match Summary -->
+                <div style="display: flex; align-items: center; justify-content: space-between; background: rgba(255,255,255,0.03); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); padding: 1.25rem 1.75rem;">
+                    <div>
+                        <div style="font-size: 0.8rem; color: var(--text-muted); text-transform: uppercase;">Match Compatibility</div>
+                        <div style="font-size: 2.2rem; font-weight: 800; color: #fff;" id="modal-score">0%</div>
+                    </div>
+                    <div>
+                        <div style="font-size: 0.8rem; color: var(--text-muted); text-transform: uppercase;">Leaderboard Position</div>
+                        <div style="font-size: 1.4rem; font-weight: 700; color: #fbbf24;" id="modal-rank">#1</div>
+                    </div>
+                    <div>
+                        <div style="font-size: 0.8rem; color: var(--text-muted); text-transform: uppercase;">Resume Length</div>
+                        <div style="font-size: 1.2rem; font-weight: 600; color: #e2e8f0;" id="modal-words">0 words</div>
+                    </div>
+                </div>
+
+                <!-- Explainability Section: Why this candidate matched -->
+                <div class="explain-box">
+                    <h4><i class="fa-solid fa-wand-magic-sparkles"></i> Why This Candidate Matched</h4>
+                    <ul class="explain-list" id="modal-explanation-list"></ul>
+                </div>
+
+                <!-- Skills Breakdown -->
+                <div class="grid-2col" style="margin-bottom: 0;">
+                    <div style="background: rgba(0,0,0,0.25); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); padding: 1.25rem;">
+                        <h4 style="color: #6ee7b7; margin-bottom: 0.75rem; font-size: 0.92rem;"><i class="fa-solid fa-circle-check"></i> Matched Skills</h4>
+                        <div class="chip-container" id="modal-matched-skills" style="display: flex; flex-wrap: wrap; gap: 0.4rem;"></div>
+                    </div>
+
+                    <div style="background: rgba(0,0,0,0.25); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); padding: 1.25rem;">
+                        <h4 style="color: #fda4af; margin-bottom: 0.75rem; font-size: 0.92rem;"><i class="fa-solid fa-circle-xmark"></i> Missing Skills (Gap)</h4>
+                        <div class="chip-container" id="modal-missing-skills" style="display: flex; flex-wrap: wrap; gap: 0.4rem;"></div>
+                    </div>
+                </div>
+
+                <!-- Actionable Recommendations -->
+                <div style="background: rgba(255,255,255,0.02); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); padding: 1.25rem;">
+                    <h4 style="color: #93c5fd; margin-bottom: 0.75rem; font-size: 0.92rem;"><i class="fa-solid fa-lightbulb"></i> ATS Recommendations</h4>
+                    <ul class="explain-list" id="modal-recommendations-list"></ul>
+                </div>
+
+                <!-- Extracted Text Snippet -->
+                <div>
+                    <h4 style="color: var(--text-title); margin-bottom: 0.5rem; font-size: 0.88rem;"><i class="fa-regular fa-file-lines"></i> Extracted Resume Content Snippet</h4>
+                    <div class="resume-preview-box" id="modal-preview-text"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Toast Error Notification -->
-    <div class="toast" id="toast-msg"></div>
+    <div class="toast" id="toast-notification"></div>
 
     <!-- Footer -->
     <footer>
-        <p>Built with Flask, Scikit-Learn, PyPDF2, NLTK, and Pandas &bull; Ready for Render Cloud Deployment</p>
+        <p>AI Resume Screening & Ranking System &bull; Built with Python, Scikit-Learn, NLTK &amp; Flask</p>
     </footer>
 
+    <!-- JavaScript Application Logic -->
     <script>
-        let currentInputMode = 'upload';
-        let latestRankedCandidates = [];
+        let uploadedFiles = [];
+        let evaluatedCandidates = [];
+        let barChartInstance = null;
+        let radarChartInstance = null;
 
-        function switchMainTab(tab, btn) {
-            document.querySelectorAll('.view-panel').forEach(p => p.classList.remove('active'));
-            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+        const sampleJobDescriptions = {
+            python: `Senior Backend Python Engineer.
+Requirements:
+- Strong proficiency in Python, Flask or Django, and RESTful API architecture.
+- Experience with PostgreSQL, Redis, Docker, and Kubernetes.
+- Cloud infrastructure experience on AWS and automated CI/CD workflows.
+- Strong knowledge of Git, microservices, and Agile methodologies.
+- Familiarity with Machine Learning fundamentals or NLP is a plus.`,
+            ml: `Lead Data Scientist / Machine Learning Engineer.
+Requirements:
+- Strong proficiency in Python, Scikit-Learn, Pandas, NumPy, and PyTorch.
+- Experience with Natural Language Processing (NLP), TF-IDF, text vectorization, and Cosine Similarity.
+- Hands-on experience with SQL databases and deploying models using Flask or FastAPI.
+- Knowledge of Docker, Git, and data analysis pipelines.`,
+            fullstack: `Senior Full Stack Developer.
+Requirements:
+- Expertise in Python, Flask, React, JavaScript, HTML5, and CSS3.
+- Relational databases (PostgreSQL, MySQL), REST APIs, and Docker.
+- Experience with Git, automated unit testing, and Agile teamwork.`
+        };
 
-            if (tab === 'single') {
-                document.getElementById('view-single').classList.add('active');
-            } else {
-                document.getElementById('view-ranking').classList.add('active');
+        // File Selection & Drag-and-drop
+        const dropzone = document.getElementById('dropzone');
+        const fileInput = document.getElementById('file_input');
+        const queueList = document.getElementById('file-queue-list');
+
+        fileInput.addEventListener('change', function() {
+            handleFilesAdded(this.files);
+        });
+
+        ['dragenter', 'dragover'].forEach(name => {
+            dropzone.addEventListener(name, (e) => { e.preventDefault(); dropzone.classList.add('dragover'); });
+        });
+        ['dragleave', 'drop'].forEach(name => {
+            dropzone.addEventListener(name, (e) => { e.preventDefault(); dropzone.classList.remove('dragover'); });
+        });
+        dropzone.addEventListener('drop', (e) => {
+            if (e.dataTransfer && e.dataTransfer.files) {
+                handleFilesAdded(e.dataTransfer.files);
             }
-            if (btn) btn.classList.add('active');
+        });
+
+        function handleFilesAdded(files) {
+            for (let i = 0; i < files.length; i++) {
+                const file = files[i];
+                const ext = file.name.split('.').pop().toLowerCase();
+                if (ext !== 'pdf' && ext !== 'txt') {
+                    showToast(`Unsupported file type for "${file.name}". Please upload PDF or TXT.`);
+                    continue;
+                }
+                if (file.size > 25 * 1024 * 1024) {
+                    showToast(`File "${file.name}" exceeds 25MB limit.`);
+                    continue;
+                }
+                // Duplicate check
+                if (!uploadedFiles.some(f => f.name === file.name && f.size === file.size)) {
+                    uploadedFiles.push(file);
+                }
+            }
+            renderFileQueue();
         }
 
-        function switchInputMode(mode) {
-            currentInputMode = mode;
-            const uploadBtn = document.getElementById('tab-upload');
-            const pasteBtn = document.getElementById('tab-paste');
-            const uploadArea = document.getElementById('upload-container');
-            const pasteArea = document.getElementById('paste-container');
+        function renderFileQueue() {
+            queueList.innerHTML = '';
+            uploadedFiles.forEach((file, index) => {
+                const isPdf = file.name.toLowerCase().endsWith('.pdf');
+                const icon = isPdf ? 'fa-file-pdf' : 'fa-file-lines';
+                const sizeKb = (file.size / 1024).toFixed(1);
 
-            if (mode === 'upload') {
-                uploadBtn.classList.add('active');
-                pasteBtn.classList.remove('active');
-                uploadArea.style.display = 'block';
-                pasteArea.style.display = 'none';
-            } else {
-                pasteBtn.classList.add('active');
-                uploadBtn.classList.remove('active');
-                uploadArea.style.display = 'none';
-                pasteArea.style.display = 'flex';
-            }
+                const item = document.createElement('div');
+                item.className = 'file-item';
+                item.innerHTML = `
+                    <div class="file-meta">
+                        <i class="fa-solid ${icon}" style="color: ${isPdf ? '#f87171' : '#60a5fa'};"></i>
+                        <span>${file.name}</span>
+                        <span style="color: var(--text-subtle); font-size: 0.75rem;">(${sizeKb} KB)</span>
+                    </div>
+                    <button type="button" class="file-remove-btn" onclick="removeFile(${index})" title="Remove file">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                `;
+                queueList.appendChild(item);
+            });
+        }
+
+        function removeFile(index) {
+            uploadedFiles.splice(index, 1);
+            renderFileQueue();
+        }
+
+        function clearAllFiles() {
+            uploadedFiles = [];
+            fileInput.value = '';
+            renderFileQueue();
+        }
+
+        function loadSampleJD(key) {
+            document.getElementById('job_description_input').value = sampleJobDescriptions[key] || '';
         }
 
         function showToast(msg) {
-            const toast = document.getElementById('toast-msg');
+            const toast = document.getElementById('toast-notification');
             toast.textContent = msg;
             toast.style.display = 'block';
-            setTimeout(() => { toast.style.display = 'none'; }, 4000);
+            setTimeout(() => { toast.style.display = 'none'; }, 4500);
         }
 
-        // --- Single PDF Selection ---
-        const singlePdf = document.getElementById('single_pdf');
-        const singleFileCard = document.getElementById('single-file-card');
-        const singleFileName = document.getElementById('single-file-name');
-        const singleDropzone = document.getElementById('single-dropzone');
+        // Demo Candidate Simulator
+        function loadDemoCandidates() {
+            loadSampleJD('python');
+            const demoResumes = [
+                {
+                    candidate_name: "Alice_Senior_Python_Developer.pdf",
+                    match_score: 88.5,
+                    word_count: 420,
+                    matched_skills: ["python", "flask", "docker", "kubernetes", "postgresql", "aws", "git", "rest api", "microservices"],
+                    missing_skills: ["redis", "agile"],
+                    matching_terms: [
+                        { term: "python", jd_weight: 0.35, resume_weight: 0.32 },
+                        { term: "flask", jd_weight: 0.28, resume_weight: 0.25 },
+                        { term: "docker", jd_weight: 0.24, resume_weight: 0.22 },
+                        { term: "kubernetes", jd_weight: 0.21, resume_weight: 0.19 }
+                    ],
+                    explanation: [
+                        "Strong overall alignment (88.5% match). The resume shares high TF-IDF semantic overlap with the job description.",
+                        "Matched 9 key technical requirement(s): python, flask, docker, kubernetes, postgresql, aws, git, rest api, microservices.",
+                        "Identified 2 missing requirement(s): redis, agile."
+                    ],
+                    recommendations: [
+                        "Highlight production experience with Redis and agile sprint leadership.",
+                        "Maintain current concise format."
+                    ],
+                    preview_text: "Senior Backend Python Engineer with 6+ years experience building cloud-native microservices using Flask, Docker, Kubernetes, and PostgreSQL on AWS. Built REST APIs, CI/CD pipelines with GitHub Actions."
+                },
+                {
+                    candidate_name: "Bob_FullStack_Engineer.pdf",
+                    match_score: 72.0,
+                    word_count: 360,
+                    matched_skills: ["python", "flask", "docker", "git", "postgresql", "rest api", "html", "react"],
+                    missing_skills: ["kubernetes", "redis", "aws", "microservices"],
+                    matching_terms: [
+                        { term: "python", jd_weight: 0.35, resume_weight: 0.28 },
+                        { term: "flask", jd_weight: 0.28, resume_weight: 0.24 },
+                        { term: "postgresql", jd_weight: 0.22, resume_weight: 0.20 }
+                    ],
+                    explanation: [
+                        "Moderate alignment (72.0% match). Core terminology is present, with room for additional technical coverage.",
+                        "Matched 6 key technical requirement(s): python, flask, docker, git, postgresql, rest api.",
+                        "Identified 4 missing requirement(s): kubernetes, redis, aws, microservices."
+                    ],
+                    recommendations: [
+                        "Add experience in cloud container orchestration (Kubernetes/AWS ECS).",
+                        "Incorporate caching strategies with Redis."
+                    ],
+                    preview_text: "Full Stack Engineer specializing in Python, Flask, React, and PostgreSQL. Experienced in Dockerizing applications and writing unit tests with Git version control."
+                },
+                {
+                    candidate_name: "Charlie_Data_Scientist.pdf",
+                    match_score: 48.5,
+                    word_count: 290,
+                    matched_skills: ["python", "git", "sql", "pandas", "machine learning"],
+                    missing_skills: ["flask", "django", "docker", "kubernetes", "redis", "aws", "microservices"],
+                    matching_terms: [
+                        { term: "python", jd_weight: 0.35, resume_weight: 0.30 },
+                        { term: "git", jd_weight: 0.18, resume_weight: 0.15 }
+                    ],
+                    explanation: [
+                        "Low compatibility (48.5% match). The resume lacks several core qualifications and keywords specified in the job posting.",
+                        "Matched 2 key technical requirement(s): python, git.",
+                        "Identified 7 missing requirement(s): flask, django, docker, kubernetes, redis, aws, microservices."
+                    ],
+                    recommendations: [
+                        "Tailor bullet points to emphasize web backend frameworks and cloud deployment.",
+                        "Add REST API and microservices architecture projects."
+                    ],
+                    preview_text: "Data Scientist with experience in Python, Pandas, Scikit-Learn, and SQL. Built predictive models and performed exploratory data analysis."
+                },
+                {
+                    candidate_name: "David_Junior_Web_Developer.pdf",
+                    match_score: 32.0,
+                    word_count: 190,
+                    matched_skills: ["html", "css", "javascript", "git"],
+                    missing_skills: ["python", "flask", "django", "docker", "kubernetes", "postgresql", "redis", "aws"],
+                    matching_terms: [
+                        { term: "git", jd_weight: 0.18, resume_weight: 0.12 }
+                    ],
+                    explanation: [
+                        "Low compatibility (32.0% match). Core Python and backend competencies are missing.",
+                        "Matched 1 key technical requirement(s): git.",
+                        "Identified 8 missing requirement(s): python, flask, django, docker, kubernetes, postgresql, redis, aws."
+                    ],
+                    recommendations: [
+                        "Gain practical experience with Python backend frameworks.",
+                        "Expand resume content with backend development projects."
+                    ],
+                    preview_text: "Junior Frontend Developer proficient in HTML, CSS, JavaScript, and Git. Seeking opportunities to transition into full-stack backend development."
+                }
+            ];
 
-        singlePdf.addEventListener('change', function() {
-            if (this.files && this.files[0]) {
-                singleFileName.textContent = this.files[0].name + ` (${(this.files[0].size / 1024).toFixed(1)} KB)`;
-                singleFileCard.style.display = 'flex';
-                singleDropzone.style.display = 'none';
-            }
-        });
-
-        function clearSingleFile() {
-            singlePdf.value = '';
-            singleFileCard.style.display = 'none';
-            singleDropzone.style.display = 'flex';
+            simulatePipelineProgress(demoResumes, {
+                candidates_analyzed: 4,
+                top_candidate: "Alice_Senior_Python_Developer.pdf",
+                highest_match: 88.5,
+                average_match: 60.3,
+                total_unique_skills_found: 14
+            });
         }
 
-        // --- Batch PDF Selection ---
-        const batchPdfs = document.getElementById('batch_pdfs');
-        const batchFileCard = document.getElementById('batch-file-card');
-        const batchFileName = document.getElementById('batch-file-name');
-        const batchDropzone = document.getElementById('batch-dropzone');
-
-        batchPdfs.addEventListener('change', function() {
-            if (this.files && this.files.length > 0) {
-                batchFileName.textContent = `${this.files.length} PDF resumes selected`;
-                batchFileCard.style.display = 'flex';
-                batchDropzone.style.display = 'none';
-            }
-        });
-
-        function clearBatchFiles() {
-            batchPdfs.value = '';
-            batchFileCard.style.display = 'none';
-            batchDropzone.style.display = 'flex';
-        }
-
-        // --- Sample Fillers ---
-        function fillSampleSingleResume() {
-            switchInputMode('paste');
-            document.getElementById('single_resume_text').value = `Senior Software Engineer with 5+ years experience designing scalable web applications.
-Skills: Python, Flask, Django, PostgreSQL, Docker, Kubernetes, REST APIs, Git, AWS, CI/CD, React, JavaScript, Microservices, Redis.
-Experience:
-- Designed and maintained high-throughput microservices using Flask and Docker on AWS ECS.
-- Optimized database queries in PostgreSQL, reducing query latency by 40%.
-- Implemented automated CI/CD pipelines with GitHub Actions.`;
-        }
-
-        function fillSampleSingleJob() {
-            document.getElementById('single_jd_text').value = `We are looking for a Senior Backend Python Engineer to lead the architecture of our cloud microservices platform.
-Requirements:
-- Strong proficiency in Python, Flask or Django, and RESTful API design.
-- Hands-on experience with PostgreSQL, Redis, and message queues.
-- Strong containerization skills with Docker and Kubernetes.
-- Experience with AWS cloud infrastructure and automated CI/CD workflows.
-- Familiarity with Machine Learning pipelines, NLP, and scikit-learn is a plus.`;
-        }
-
-        function fillSampleRankingJob() {
-            document.getElementById('ranking_jd_text').value = `Senior Full Stack Python & Cloud Developer.
-Requirements:
-- Strong Python, Flask, REST APIs, and React/JavaScript.
-- PostgreSQL, Redis, Docker, Kubernetes, and AWS deployment.
-- CI/CD, Git, and automated testing experience.`;
-        }
-
-        // --- Single Submit ---
-        document.getElementById('single-form').addEventListener('submit', async function(e) {
+        // Form Submit Handler
+        document.getElementById('screening-form').addEventListener('submit', async function(e) {
             e.preventDefault();
-            const jd = document.getElementById('single_jd_text').value.trim();
+
+            const jd = document.getElementById('job_description_input').value.trim();
             if (!jd) {
-                showToast('Please provide a target job description.');
+                showToast("Please enter a job description.");
+                return;
+            }
+            if (jd.length < 20 || jd.split(/\s+/).length < 4) {
+                showToast("Job description is too short. Please provide detailed requirements.");
+                return;
+            }
+            if (uploadedFiles.length === 0) {
+                showToast("Please upload at least one resume.");
                 return;
             }
 
             const formData = new FormData();
             formData.append('job_description', jd);
+            uploadedFiles.forEach(f => formData.append('resumes_files', f));
 
-            if (currentInputMode === 'upload') {
-                if (!singlePdf.files || !singlePdf.files[0]) {
-                    showToast('Please upload a PDF resume or switch to paste text.');
-                    return;
-                }
-                formData.append('resume_pdf', singlePdf.files[0]);
-            } else {
-                const text = document.getElementById('single_resume_text').value.trim();
-                if (!text) {
-                    showToast('Please paste your resume text.');
-                    return;
-                }
-                formData.append('resume_text', text);
-            }
-
-            const btn = document.getElementById('single-btn');
-            btn.disabled = true;
-            btn.innerHTML = '<span>Analyzing...</span> <i class="fa-solid fa-spinner fa-spin"></i>';
+            // Start Progress Animation
+            showProcessingModal();
 
             try {
-                const res = await fetch('/analyze_single', { method: 'POST', body: formData });
+                const res = await fetch('/analyze_batch', {
+                    method: 'POST',
+                    body: formData
+                });
+
                 const data = await res.json();
                 if (!res.ok || !data.success) {
-                    showToast(data.error || 'Failed to analyze documents.');
+                    hideProcessingModal();
+                    showToast(data.error || "Failed to process resumes.");
                     return;
                 }
 
-                renderSingleResults(data.data);
+                // Smooth finish progress
+                completePipelineStages(() => {
+                    hideProcessingModal();
+                    renderDashboard(data.summary, data.ranked_candidates);
+                });
+
             } catch (err) {
-                showToast('Server error or network failure.');
+                hideProcessingModal();
+                showToast("An unexpected error occurred during analysis. Please try again.");
                 console.error(err);
-            } finally {
-                btn.disabled = false;
-                btn.innerHTML = '<span>Analyze Match & Skill Gap</span> <i class="fa-solid fa-arrow-right"></i>';
             }
         });
 
-        function renderSingleResults(data) {
-            const resultsBox = document.getElementById('single-results');
-            resultsBox.style.display = 'block';
+        // Multi-stage progress modal management
+        const processingModal = document.getElementById('processing-modal');
+        const progressBar = document.getElementById('pipeline-progress-bar');
 
-            // Gauge
-            document.getElementById('score-value').textContent = `${data.match_score}%`;
-            const circumference = 408.4;
-            const offset = circumference - (data.match_score / 100) * circumference;
-            document.getElementById('score-circle').style.strokeDashoffset = offset;
-
-            // Stats
-            document.getElementById('matched-count').textContent = data.matched_skills.length;
-            document.getElementById('missing-count').textContent = data.missing_skills.length;
-            document.getElementById('resume-words').textContent = data.resume_word_count;
-
-            // Matched skills
-            const matchedWrap = document.getElementById('matched-chips');
-            matchedWrap.innerHTML = '';
-            if (data.matched_skills.length > 0) {
-                data.matched_skills.forEach(kw => {
-                    matchedWrap.innerHTML += `<span class="chip matched"><i class="fa-solid fa-check"></i> ${kw}</span>`;
-                });
-            } else {
-                matchedWrap.innerHTML = '<span style="color: var(--text-muted); font-size: 0.85rem;">No direct matching technical skills found.</span>';
-            }
-
-            // Missing skills (Skill Gap)
-            const missingWrap = document.getElementById('missing-chips');
-            missingWrap.innerHTML = '';
-            if (data.missing_skills.length > 0) {
-                data.missing_skills.forEach(kw => {
-                    missingWrap.innerHTML += `<span class="chip missing"><i class="fa-solid fa-plus"></i> ${kw}</span>`;
-                });
-            } else {
-                missingWrap.innerHTML = '<span style="color: #6ee7b7; font-size: 0.85rem;">🎉 No major skill gaps found! Excellent match.</span>';
-            }
-
-            // Recommendations
-            const recsList = document.getElementById('recommendations-list');
-            recsList.innerHTML = '';
-            data.recommendations.forEach(rec => {
-                recsList.innerHTML += `<li><i class="fa-solid fa-chevron-right"></i> <span>${rec}</span></li>`;
-            });
-
-            resultsBox.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        function showProcessingModal() {
+            document.getElementById('btn-submit').disabled = true;
+            processingModal.style.display = 'flex';
+            progressBar.style.width = '15%';
+            resetStages();
+            advanceStage(1);
         }
 
-        // --- Multi-Resume Ranking Submit ---
-        document.getElementById('ranking-form').addEventListener('submit', async function(e) {
-            e.preventDefault();
-            const jd = document.getElementById('ranking_jd_text').value.trim();
-            if (!jd) {
-                showToast('Please provide a benchmark job description.');
-                return;
+        function hideProcessingModal() {
+            document.getElementById('btn-submit').disabled = false;
+            processingModal.style.display = 'none';
+        }
+
+        function resetStages() {
+            for (let i = 1; i <= 6; i++) {
+                const el = document.getElementById(`stage-${i}`);
+                el.className = 'stage-item';
+                el.querySelector('i').className = 'fa-regular fa-circle';
             }
+        }
 
-            if (!batchPdfs.files || batchPdfs.files.length === 0) {
-                showToast('Please select multiple PDF files, or click "Load Demo Candidates".');
-                return;
+        function advanceStage(stageNum) {
+            if (stageNum > 1) {
+                const prev = document.getElementById(`stage-${stageNum-1}`);
+                prev.className = 'stage-item completed';
+                prev.querySelector('i').className = 'fa-solid fa-circle-check';
             }
+            const curr = document.getElementById(`stage-${stageNum}`);
+            if (curr) {
+                curr.className = 'stage-item current';
+                curr.querySelector('i').className = 'fa-solid fa-spinner fa-spin';
+                progressBar.style.width = `${stageNum * 16}%`;
+            }
+        }
 
-            const formData = new FormData(this);
-            const btn = document.getElementById('ranking-btn');
-            btn.disabled = true;
-            btn.innerHTML = '<span>Ranking Candidates...</span> <i class="fa-solid fa-spinner fa-spin"></i>';
-
-            try {
-                const res = await fetch('/analyze_batch', { method: 'POST', body: formData });
-                const data = await res.json();
-                if (!res.ok || !data.success) {
-                    showToast(data.error || 'Batch evaluation failed.');
-                    return;
+        function completePipelineStages(callback) {
+            let stage = 2;
+            const interval = setInterval(() => {
+                advanceStage(stage);
+                stage++;
+                if (stage > 6) {
+                    clearInterval(interval);
+                    progressBar.style.width = '100%';
+                    setTimeout(callback, 300);
                 }
+            }, 120);
+        }
 
-                renderRankingResults(data.ranked_candidates);
-            } catch (err) {
-                showToast('Server error or network failure.');
-                console.error(err);
-            } finally {
-                btn.disabled = false;
-                btn.innerHTML = '<span>Rank Candidates & Generate Leaderboard</span> <i class="fa-solid fa-ranking-star"></i>';
-            }
-        });
+        function simulatePipelineProgress(candidates, summary) {
+            showProcessingModal();
+            completePipelineStages(() => {
+                hideProcessingModal();
+                renderDashboard(summary, candidates);
+            });
+        }
 
-        function renderRankingResults(candidates) {
-            latestRankedCandidates = candidates;
-            const card = document.getElementById('ranking-results');
-            card.style.display = 'block';
+        // Render Dashboard
+        function renderDashboard(summary, candidates) {
+            evaluatedCandidates = candidates;
+            const dash = document.getElementById('results-dashboard');
+            dash.style.display = 'block';
 
-            document.getElementById('ranking-summary').textContent = `Ranked ${candidates.length} applicant resumes based on skill match and Cosine Similarity.`;
+            // 1. Metric cards
+            document.getElementById('metric-total-candidates').textContent = summary.candidates_analyzed || candidates.length;
+            document.getElementById('metric-top-candidate').textContent = summary.top_candidate || candidates[0].candidate_name;
+            document.getElementById('metric-top-candidate').title = summary.top_candidate || candidates[0].candidate_name;
+            document.getElementById('metric-highest-score').textContent = `${summary.highest_match}%`;
+            document.getElementById('metric-average-score').textContent = `${summary.average_match}%`;
 
+            // 2. Ranking Table
             const tbody = document.getElementById('ranking-table-body');
             tbody.innerHTML = '';
 
-            candidates.forEach((c, idx) => {
-                const rank = idx + 1;
+            candidates.forEach((c, index) => {
+                const rank = index + 1;
                 let badgeClass = 'rank-other';
                 if (rank === 1) badgeClass = 'rank-1';
                 else if (rank === 2) badgeClass = 'rank-2';
                 else if (rank === 3) badgeClass = 'rank-3';
 
-                const matchedHtml = c.matched_skills.map(s => `<span class="chip matched" style="font-size:0.75rem; padding: 0.2rem 0.5rem;">${s}</span>`).join(' ') || '<span style="color:var(--text-muted); font-size:0.8rem;">None</span>';
-                const missingHtml = c.missing_skills.slice(0, 4).map(s => `<span class="chip missing" style="font-size:0.75rem; padding: 0.2rem 0.5rem;">${s}</span>`).join(' ') || '<span style="color:#6ee7b7; font-size:0.8rem;">None</span>';
+                const matchedTags = c.matched_skills.map(s => `<span class="chip matched">${s}</span>`).join(' ') || '<span style="color:var(--text-subtle); font-size:0.8rem;">None</span>';
+                const missingTags = c.missing_skills.slice(0, 4).map(s => `<span class="chip missing">${s}</span>`).join(' ') || '<span style="color:#6ee7b7; font-size:0.8rem;">None</span>';
 
-                tbody.innerHTML += `
-                    <tr>
-                        <td><span class="rank-badge ${badgeClass}">#${rank}</span></td>
-                        <td>
-                            <div style="font-weight: 600; color: #fff;"><i class="fa-regular fa-file-pdf" style="color: #818cf8; margin-right: 6px;"></i>${c.candidate_name}</div>
-                            <div style="font-size: 0.75rem; color: var(--text-muted);">${c.resume_word_count} words</div>
-                        </td>
-                        <td>
-                            <div>
-                                <div class="progress-bar-wrap">
-                                    <div class="progress-bar-fill" style="width: ${c.match_score}%;"></div>
-                                </div>
-                                <span style="font-weight: 700; color: #fff;">${c.match_score}%</span>
+                const tr = document.createElement('tr');
+                tr.className = 'clickable-row';
+                tr.onclick = () => openCandidateModal(index);
+                tr.innerHTML = `
+                    <td><span class="rank-badge ${badgeClass}">#${rank}</span></td>
+                    <td>
+                        <div style="font-weight: 600; color: #fff;"><i class="fa-regular fa-file-lines" style="color: #818cf8; margin-right: 6px;"></i>${c.candidate_name}</div>
+                        <div style="font-size: 0.75rem; color: var(--text-muted);">${c.word_count} words</div>
+                    </td>
+                    <td>
+                        <div>
+                            <div class="progress-bar-wrap">
+                                <div class="progress-bar-fill" style="width: ${c.match_score}%;"></div>
                             </div>
-                        </td>
-                        <td><div style="max-width: 260px; display: flex; flex-wrap: wrap; gap: 4px;">${matchedHtml}</div></td>
-                        <td><div style="max-width: 260px; display: flex; flex-wrap: wrap; gap: 4px;">${missingHtml}</div></td>
-                    </tr>
+                            <span style="font-weight: 700; color: #fff;">${c.match_score}%</span>
+                        </div>
+                    </td>
+                    <td><div style="max-width: 240px; display: flex; flex-wrap: wrap; gap: 4px;">${matchedTags}</div></td>
+                    <td><div style="max-width: 240px; display: flex; flex-wrap: wrap; gap: 4px;">${missingTags}</div></td>
+                    <td>
+                        <button class="btn-export" style="padding: 0.35rem 0.75rem;" onclick="event.stopPropagation(); openCandidateModal(${index})">
+                            <i class="fa-solid fa-eye"></i> Details
+                        </button>
+                    </td>
                 `;
+                tbody.appendChild(tr);
             });
 
-            card.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            // 3. Render Charts
+            renderBarChart(candidates);
+            renderRadarChart(candidates);
+
+            dash.scrollIntoView({ behavior: 'smooth', block: 'start' });
         }
 
-        function runRankingDemo() {
-            fillSampleRankingJob();
-            const demoCandidates = [
-                {
-                    candidate_name: "Alice_Senior_FullStack.pdf",
-                    match_score: 87.5,
-                    resume_word_count: 390,
-                    matched_skills: ["python", "flask", "docker", "kubernetes", "postgresql", "aws", "git", "react"],
-                    missing_skills: ["redis"]
+        // Charts
+        function renderBarChart(candidates) {
+            const ctx = document.getElementById('rankingBarChart').getContext('2d');
+            if (barChartInstance) barChartInstance.destroy();
+
+            const labels = candidates.map(c => c.candidate_name.length > 18 ? c.candidate_name.substring(0, 15) + '...' : c.candidate_name);
+            const scores = candidates.map(c => c.match_score);
+
+            barChartInstance = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Match Score (%)',
+                        data: scores,
+                        backgroundColor: scores.map(s => s >= 75 ? 'rgba(16, 185, 129, 0.75)' : s >= 50 ? 'rgba(99, 102, 241, 0.75)' : 'rgba(244, 63, 94, 0.75)'),
+                        borderColor: scores.map(s => s >= 75 ? '#10b981' : s >= 50 ? '#6366f1' : '#f43f5e'),
+                        borderWidth: 1,
+                        borderRadius: 6
+                    }]
                 },
-                {
-                    candidate_name: "Bob_Backend_Developer.pdf",
-                    match_score: 74.0,
-                    resume_word_count: 360,
-                    matched_skills: ["python", "flask", "docker", "git", "postgresql", "rest api"],
-                    missing_skills: ["kubernetes", "redis", "aws", "react"]
-                },
-                {
-                    candidate_name: "Charlie_Frontend_Dev.pdf",
-                    match_score: 46.5,
-                    resume_word_count: 280,
-                    matched_skills: ["react", "javascript", "html", "git"],
-                    missing_skills: ["python", "flask", "docker", "kubernetes", "postgresql", "redis", "aws"]
-                },
-                {
-                    candidate_name: "David_Junior_Intern.pdf",
-                    match_score: 31.0,
-                    resume_word_count: 190,
-                    matched_skills: ["python", "git"],
-                    missing_skills: ["flask", "docker", "kubernetes", "postgresql", "redis", "aws", "react"]
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 100,
+                            grid: { color: 'rgba(255, 255, 255, 0.05)' },
+                            ticks: { color: '#9ca3af' }
+                        },
+                        x: {
+                            grid: { display: false },
+                            ticks: { color: '#9ca3af', font: { size: 11 } }
+                        }
+                    },
+                    plugins: {
+                        legend: { display: false }
+                    }
                 }
-            ];
-
-            renderRankingResults(demoCandidates);
-            showToast('✅ Demo candidates ranked successfully!');
+            });
         }
 
-        async function downloadCSVReport() {
-            if (!latestRankedCandidates || latestRankedCandidates.length === 0) {
-                showToast('No candidate data available to export.');
-                return;
+        function renderRadarChart(candidates) {
+            const ctx = document.getElementById('skillRadarChart').getContext('2d');
+            if (radarChartInstance) radarChartInstance.destroy();
+
+            const totalMatched = candidates.reduce((sum, c) => sum + c.matched_skills.length, 0);
+            const totalMissing = candidates.reduce((sum, c) => sum + c.missing_skills.length, 0);
+
+            radarChartInstance = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Matched Skills', 'Missing Skills (Gap)'],
+                    datasets: [{
+                        data: [totalMatched || 1, totalMissing || 1],
+                        backgroundColor: ['rgba(16, 185, 129, 0.8)', 'rgba(244, 63, 94, 0.8)'],
+                        borderColor: ['#10b981', '#f43f5e'],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: { color: '#e5e7eb', font: { size: 12 } }
+                        }
+                    },
+                    cutout: '65%'
+                }
+            });
+        }
+
+        // Candidate Detail Modal
+        function openCandidateModal(index) {
+            const candidate = evaluatedCandidates[index];
+            if (!candidate) return;
+
+            document.getElementById('modal-candidate-name').textContent = candidate.candidate_name;
+            document.getElementById('modal-candidate-meta').textContent = `Candidate #${index + 1} Evaluation & Explainability`;
+            document.getElementById('modal-score').textContent = `${candidate.match_score}%`;
+            document.getElementById('modal-rank').textContent = `#${index + 1}`;
+            document.getElementById('modal-words').textContent = `${candidate.word_count} words`;
+
+            // Explanation
+            const explainList = document.getElementById('modal-explanation-list');
+            explainList.innerHTML = '';
+            (candidate.explanation || []).forEach(e => {
+                explainList.innerHTML += `<li><i class="fa-solid fa-circle-info"></i> <span>${e}</span></li>`;
+            });
+
+            // Matched skills
+            const matchedWrap = document.getElementById('modal-matched-skills');
+            matchedWrap.innerHTML = '';
+            if (candidate.matched_skills && candidate.matched_skills.length > 0) {
+                candidate.matched_skills.forEach(s => {
+                    matchedWrap.innerHTML += `<span class="chip matched"><i class="fa-solid fa-check"></i> ${s}</span>`;
+                });
+            } else {
+                matchedWrap.innerHTML = '<span style="color:var(--text-muted); font-size:0.85rem;">No technical skills matched.</span>';
             }
 
+            // Missing skills
+            const missingWrap = document.getElementById('modal-missing-skills');
+            missingWrap.innerHTML = '';
+            if (candidate.missing_skills && candidate.missing_skills.length > 0) {
+                candidate.missing_skills.forEach(s => {
+                    missingWrap.innerHTML += `<span class="chip missing"><i class="fa-solid fa-xmark"></i> ${s}</span>`;
+                });
+            } else {
+                missingWrap.innerHTML = '<span style="color:#6ee7b7; font-size:0.85rem;">🎉 Zero skill gap found!</span>';
+            }
+
+            // Recommendations
+            const recList = document.getElementById('modal-recommendations-list');
+            recList.innerHTML = '';
+            (candidate.recommendations || []).forEach(r => {
+                recList.innerHTML += `<li><i class="fa-solid fa-chevron-right"></i> <span>${r}</span></li>`;
+            });
+
+            // Preview
+            document.getElementById('modal-preview-text').textContent = candidate.preview_text || "No preview available.";
+
+            document.getElementById('candidate-modal').style.display = 'flex';
+        }
+
+        function closeCandidateModal() {
+            document.getElementById('candidate-modal').style.display = 'none';
+        }
+
+        window.onclick = function(e) {
+            const modal = document.getElementById('candidate-modal');
+            if (e.target === modal) {
+                closeCandidateModal();
+            }
+        };
+
+        // Export handlers
+        async function exportCSVReport() {
+            if (!evaluatedCandidates || evaluatedCandidates.length === 0) {
+                showToast("No candidate data to export.");
+                return;
+            }
             try {
                 const res = await fetch('/export_ranking_csv', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ candidates: latestRankedCandidates })
+                    body: JSON.stringify({ candidates: evaluatedCandidates })
                 });
-
                 const blob = await res.blob();
                 const url = window.URL.createObjectURL(blob);
                 const a = document.createElement('a');
                 a.href = url;
-                a.download = 'resume_screening_ranking_report.csv';
+                a.download = 'resume_screening_report.csv';
                 document.body.appendChild(a);
                 a.click();
                 a.remove();
             } catch (err) {
-                showToast('Failed to export CSV report.');
+                showToast("Failed to export CSV report.");
+            }
+        }
+
+        async function exportJSONReport() {
+            if (!evaluatedCandidates || evaluatedCandidates.length === 0) {
+                showToast("No candidate data to export.");
+                return;
+            }
+            try {
+                const res = await fetch('/export_ranking_json', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ candidates: evaluatedCandidates })
+                });
+                const blob = await res.blob();
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'resume_screening_report.json';
+                document.body.appendChild(a);
+                a.click();
+                a.remove();
+            } catch (err) {
+                showToast("Failed to export JSON report.");
             }
         }
     </script>
